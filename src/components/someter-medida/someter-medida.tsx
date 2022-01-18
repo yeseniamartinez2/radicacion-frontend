@@ -3,9 +3,27 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Dropzone from 'react-dropzone';
 import Card from '@mui/material/Card';
-//import LoadingButton from '@mui/lab/LoadingButton';
-//import SaveIcon from '@mui/icons-material/Save';
-
+import Button from '@mui/material/Button';
+import SaveIcon from '@mui/icons-material/Save';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+const theme = createTheme({
+  palette: {
+    primary: {
+        main: '#2e4c32',
+      },
+      secondary: {
+        main: '#d7bc39',
+      },
+      success: {
+        main: '#17545b',
+      },
+  },
+  typography: {   
+    fontFamily:'Roboto',
+    fontSize: 14,    
+  },
+  spacing: 4
+});
 
 async function postMedida(data){
   const medidas_url = "http://localhost:9000/medidas";
@@ -14,8 +32,6 @@ async function postMedida(data){
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   };
-
-
   fetch(medidas_url, postRequestOptions)
       .then(async response => {
           const isJson = response.headers.get('content-type')?.includes('application/json');
@@ -27,6 +43,7 @@ async function postMedida(data){
             //  const error = (data && data.message) || response.status;
               //return Promise.reject(error);
           }
+             
       })
       .catch(error => { 
           console.error('There was an error!', error);
@@ -36,7 +53,8 @@ async function postMedida(data){
 function SometerMedidaForm() {
     
     const [valueTipoMedida, setValueTipoMedida] = React.useState<string|undefined>('');
-    const [valueMedidaFile, setValueMedidaFile] = React.useState<Blob|File|undefined|null>(undefined);
+    const [valueMedidaFile, setValueMedidaFile] = React.useState<File|undefined|null>(undefined);
+     
     
     const tipo_medidas = [
       //'p_de_la_c', 'r_de_la_c', 'rc_de_la_c', 'r_conc_de_la_c', 'voto_explicativo', 'plan_de_reorganizacion'
@@ -79,10 +97,12 @@ function SometerMedidaForm() {
     postMedida(data);
   };
   return (
-    <Card className="upload-medida-card" variant="outlined">
+   
+    <Card className="upload-medida-card">
       <form onSubmit={handleSubmit}>
           <Autocomplete
             disablePortal
+            size="small"
             id="combo-box-demo"
             options={tipo_medidas}
             getOptionLabel={(tipo) => tipo.label}
@@ -103,21 +123,19 @@ function SometerMedidaForm() {
                 <div className="dropzone" {...getRootProps()}>
                   <input {...getInputProps()} />
                   <p>Drag 'n' drop some files here, or click to select files</p>
+                  { valueMedidaFile ? <p>{valueMedidaFile.name}</p> : null}
                 </div>
               </section>
             )}
           </Dropzone>
-        <button type="submit" className="btn btn-success" >ADD</button>
-       {/*} <LoadingButton
-            loading
-            color="secondary"
-            loadingPosition="start"
-            startIcon={<SaveIcon />}
-            variant="outlined">
-            Save
-            </LoadingButton> */}
+        
+          <Button variant="contained" type="submit" color="primary" endIcon={<SaveIcon />}>
+            Guardar
+          </Button>
+        
       </form>       
     </Card>
+
   );
 }
 
