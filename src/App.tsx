@@ -1,15 +1,18 @@
 import React from "react";
 import './styles.css'
 import './components/someter-medida/someter-medida.css';
+import './components/verificar-medida/verificar-medida.css';
 import SometerMedidaForm from './components/someter-medida/someter-medida';
+import MedidasTable from "./components/verificar-medida/verificar-medida";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {NavLink} from 'react-router-dom';
+import MedidaForm from "./components/verificar-medida/form";
 const theme = createTheme({
   palette: {
 
@@ -32,7 +35,9 @@ const theme = createTheme({
 function App()
 {
     return (
+      
         <ThemeProvider theme={theme}>
+          <Router>
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static">
                     <Toolbar>
@@ -48,15 +53,23 @@ function App()
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Cámara de Representantes
                     </Typography>
+                    <Button><NavLink to="/verificacion">Verificacion</NavLink></Button> 
+                    <Button><NavLink to="/radicacion">Radicacion</NavLink></Button>
                     <Button color="inherit">Login</Button>
                     </Toolbar>
                 </AppBar>
             </Box>
         <div className='App'>
-            <h1>Radicación de Medidas</h1>
-            <SometerMedidaForm />
+            
+            <Routes>      
+              <Route path="/verificacion" element={<MedidasTable />}  />
+              <Route path="/verificacion/:id" element={<MedidaForm />}/>
+              <Route path="/radicacion" element={<SometerMedidaForm />} />
+            </Routes> 
         </div>
+        </Router>
         </ThemeProvider>
+      
     );
 }
 

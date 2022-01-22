@@ -5,25 +5,11 @@ import Dropzone from 'react-dropzone';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-const theme = createTheme({
-  palette: {
-    primary: {
-        main: '#2e4c32',
-      },
-      secondary: {
-        main: '#d7bc39',
-      },
-      success: {
-        main: '#17545b',
-      },
-  },
-  typography: {   
-    fontFamily:'Roboto',
-    fontSize: 14,    
-  },
-  spacing: 4
-});
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import {tipo_medidas, modal_style} from '../utils/utils';
 
 async function postMedida(data){
   const medidas_url = "http://localhost:9000/medidas";
@@ -35,15 +21,7 @@ async function postMedida(data){
   fetch(medidas_url, postRequestOptions)
       .then(async response => {
           const isJson = response.headers.get('content-type')?.includes('application/json');
-          const data = isJson && await response.json();
-
-          // check for error response
-          if (!response.ok) {
-              // get error message from body or default to response status
-            //  const error = (data && data.message) || response.status;
-              //return Promise.reject(error);
-          }
-             
+          const data = isJson && await response.json();             
       })
       .catch(error => { 
           console.error('There was an error!', error);
@@ -52,65 +30,52 @@ async function postMedida(data){
 
 function SometerMedidaForm() {
     
-    const [valueTipoMedida, setValueTipoMedida] = React.useState<string|undefined>('');
+    const [valueTipoMedida, setValueTipoMedida] = React.useState<string|undefined|null>('');
     const [valueMedidaFile, setValueMedidaFile] = React.useState<File|undefined|null>(undefined);
-     
-    
-    const tipo_medidas = [
-      //'p_de_la_c', 'r_de_la_c', 'rc_de_la_c', 'r_conc_de_la_c', 'voto_explicativo', 'plan_de_reorganizacion'
-        {
-            "label": "P. de la C.",
-            "value": "p_de_la_c"
-        },
-        {
-            "label": "R. de la C.",
-            "value": "r_de_la_c"
-        },
-        {
-            "label": "R.C. de la C.",
-            "value": "rc_de_la_c"
-        },
-        {
-            "label": "R.Conc. de la C.",
-            "value": "r_conc_de_la_c"
-        },
-        {
-            "label": "Voto Explicativo",
-            "value": "voto_explicativo"
-        },
-        {
-            "label": "Plan de Reorganización",
-            "value": "plan_de_reorganizacion"
-        }
-    ]
+    const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => setOpen(false);
 
+  const handleSubmit = () => {
   
-  const handleSubmit = (e) => {
-    e.preventDefault();
     var data = {
       'medidaFile': valueMedidaFile,
       'tipo': valueTipoMedida,
       'estado': 'sometida'
     }
 
-    console.log(data);
-    postMedida(data);
+    if(data.medidaFile && data.tipo){
+      postMedida(data);
+      setModalMessage('Medida añadida correctamente.')
+    }
+    else {
+      setModalMessage('Asegurese de que la forma está completada.')
+    }
+
+    setOpen(true);
   };
+
+  const clearForm = () => {
+    setValueMedidaFile(null);
+    //setValueTipoMedida(null);     
+  }
+
   return (
-   
+   <div><h2>Radicar Medidas</h2>
     <Card className="upload-medida-card">
       <form onSubmit={handleSubmit}>
           <Autocomplete
             disablePortal
             size="small"
-            id="combo-box-demo"
             options={tipo_medidas}
             getOptionLabel={(tipo) => tipo.label}
             isOptionEqualToValue={(option, value) => option.value === value.value}
-            renderInput={(params) => <TextField {...params} label="Tipo de Medida" />}
+            renderInput={(params) => <TextField  {...params} label="Tipo de Medida" />}
             onChange={(event,value) => {
               console.log(value?.value);
-              setValueTipoMedida(value?.value);}}
+              setValueTipoMedida(value?.value);
+              }
+            }
           />
           <Dropzone onDrop={acceptedFiles => {
                 console.log(acceptedFiles[0]);
@@ -121,20 +86,41 @@ function SometerMedidaForm() {
             {({getRootProps, getInputProps}) => (
               <section>
                 <div className="dropzone" {...getRootProps()}>
-                  <input {...getInputProps()} />
-                  <p>Drag 'n' drop some files here, or click to select files</p>
-                  { valueMedidaFile ? <p>{valueMedidaFile.name}</p> : null}
+                  <input {...getInputProps()} />                
+                    { valueMedidaFile ? 
+                      <div className="file">
+                        <p>{valueMedidaFile.name}</p>
+                        <IconButton className='delete-file' aria-label="delete" onClick={() => setValueMedidaFile(null)}  size="small">
+                          <ClearIcon fontSize="small"/>
+                        </IconButton>
+                      </div>
+                      :   
+                      <p>Drag and drop some files here, or click to select files</p>
+                    }
                 </div>
               </section>
             )}
           </Dropzone>
+          <div className='form_options'>
+            <Button variant="contained" type="submit" color="primary" endIcon={<SaveIcon />}>
+              Guardar
+            </Button>
+          </div>
         
-          <Button variant="contained" type="submit" color="primary" endIcon={<SaveIcon />}>
-            Guardar
-          </Button>
-        
-      </form>       
+      </form>  
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modal_style}>
+          {modalMessage ? modalMessage : null}
+        </Box>
+      </Modal>
+
     </Card>
+    </div>
 
   );
 }
