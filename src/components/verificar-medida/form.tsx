@@ -10,7 +10,6 @@ import Modal from '@mui/material/Modal';
 import Card from '@mui/material/Card';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 
@@ -50,15 +49,25 @@ async function getRepresentantesData(){
 const MedidaForm: React.FC = () => {
     const [representantes, setRepresentantes] = React.useState<Representante[]>([]);
     const [valueTipoMedida, setTipoMedida] = React.useState<string|undefined|null>('');
+    const [valueLabel, setValueLabel] = React.useState<any>(undefined);
+    
     const [valueTitle, setTitle] = React.useState<string>('');
+    const [valueNumero, setNumero] = React.useState<number|undefined>(undefined);
     const [valueAuthors, setAuthors] = React.useState<Array<Representante>|null|undefined>([]);
     const [open, setOpen] = React.useState(false);
     const handleClose = () => setOpen(false);
     const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
+    
     const onTextChange = (e: any) => {
       console.log(e.target.value);
       setTitle(e.target.value)
     };
+
+    const onNumberChange = (e: any) => {
+      console.log(e.target.value);
+      setNumero(e.target.value)
+    };
+
     const id = useParams().id;
         console.log(typeof id);
   
@@ -66,17 +75,17 @@ const MedidaForm: React.FC = () => {
       var tipoMedida = tipo_medidas.filter(obj => {
         return obj.value === valueTipoMedida
       });
-      console.log(typeof valueTitle);
-      console.log(typeof tipoMedida[0].value);
+ 
       var data = {
-        'titulo': 'valueTitle',
-        'tipo': 'voto_explicativo',
+        'titulo': valueTitle,
+        'tipo': valueTipoMedida,
         'estado': 'radicada'
+        //'numeroAsignado': valueNumero
       }
       if(data.titulo && data.tipo){
-        putMedida(useParams().id, data);
+        putMedida(id, data);
         console.log(data);
-      console.log(useParams().id);
+        console.log(id);
       }
       
       
@@ -93,7 +102,11 @@ const MedidaForm: React.FC = () => {
         getMedida(id).then((data) => {
           console.log(data);
           setTitle(data.titulo);
-          
+          setTipoMedida(data.tipo);
+          var result = tipo_medidas.filter(obj => {
+            return obj.value === data.tipo;
+          });
+          setValueLabel(result[0]);
         }) 
     }, []);
     const navigate = useNavigate();
@@ -110,7 +123,7 @@ const MedidaForm: React.FC = () => {
                 label="Título" 
                 variant="outlined" 
                 size="small" 
-                defaultValue={valueTitle}
+                //value={valueTitle}
                 onChange={onTextChange}
       
               />
@@ -139,10 +152,23 @@ const MedidaForm: React.FC = () => {
                   disablePortal
                   size="small"
                   options={tipo_medidas}
+                 // value={valueLabel}
                   getOptionLabel={(tipo) => tipo.label}
                   isOptionEqualToValue={(option, value) => option.value === value.value}
-                  renderInput={(params) => <TextField  {...params} label="Tipo de Medida" />}
-                  onChange={(event,value) => {setTipoMedida(value?.value)}}
+                  renderInput={(params) => <TextField  {...params}  label="Tipo de Medida" />}
+                  onChange={(event,value) => {
+                    setTipoMedida(value?.value);
+                    setValueLabel(value);
+                  }}
+                />
+                <TextField 
+                  id="outlined-basic" 
+                  label="Número Asignado" 
+                  variant="outlined" 
+                  size="small" 
+                 // value={valueNumero}
+                  onChange={onNumberChange}
+        
                 />
                 <div className='form_options'>
                   <Button variant="contained" type="submit" color="primary" onClick={handleSubmit} endIcon={<CheckIcon />}>

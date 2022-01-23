@@ -79,6 +79,7 @@ function SometerMedidaForm() {
           />
           <Dropzone onDrop={acceptedFiles => {
                 console.log(acceptedFiles[0]);
+                //const blob = new Blob(acceptedFiles[0]);
                 setValueMedidaFile(acceptedFiles[0]);
               }
             }

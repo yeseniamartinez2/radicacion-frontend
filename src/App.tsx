@@ -4,6 +4,7 @@ import './components/someter-medida/someter-medida.css';
 import './components/verificar-medida/verificar-medida.css';
 import SometerMedidaForm from './components/someter-medida/someter-medida';
 import MedidasTable from "./components/verificar-medida/verificar-medida";
+import VerificarMedidaForm from "./components/verificar-medida-form/verificar-medida-form";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -63,7 +64,7 @@ function App()
             
             <Routes>      
               <Route path="/verificacion" element={<MedidasTable />}  />
-              <Route path="/verificacion/:id" element={<MedidaForm />}/>
+              <Route path="/verificacion/:id" element={<VerificarMedidaForm />}/>
               <Route path="/radicacion" element={<SometerMedidaForm />} />
             </Routes> 
         </div>
