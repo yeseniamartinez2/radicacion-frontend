@@ -10,60 +10,42 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import {tipo_medidas, modal_style} from '../utils/utils';
-
-async function postMedida(data){
-  const medidas_url = "http://localhost:9000/medidas";
-  const postRequestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  };
-  fetch(medidas_url, postRequestOptions)
-      .then(async response => {
-          const isJson = response.headers.get('content-type')?.includes('application/json');
-          const data = isJson && await response.json();             
-      })
-      .catch(error => { 
-          console.error('There was an error!', error);
-      });
-}
+import axios from 'axios';
+import MedidaService from '../../services/Medida';
 
 function SometerMedidaForm() {
-    
+    const ms = new MedidaService();
     const [valueTipoMedida, setValueTipoMedida] = React.useState<string|undefined|null>('');
-    const [valueMedidaFile, setValueMedidaFile] = React.useState<File|undefined|null>(undefined);
+    const [valueMedidaFile, setValueMedidaFile] = React.useState<File|undefined|null>(null);
     const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
     const [open, setOpen] = React.useState(false);
     const handleClose = () => setOpen(false);
 
   const handleSubmit = () => {
-  
     var data = {
       'medidaFile': valueMedidaFile,
       'tipo': valueTipoMedida,
       'estado': 'sometida'
     }
-
-    if(data.medidaFile && data.tipo){
-      postMedida(data);
+    if(data.tipo){
+      ms.createMedida(data);
       setModalMessage('Medida añadida correctamente.')
     }
     else {
       setModalMessage('Asegurese de que la forma está completada.')
     }
-
     setOpen(true);
   };
 
   const clearForm = () => {
-    setValueMedidaFile(null);
+  //setValueMedidaFile('');
     //setValueTipoMedida(null);     
   }
 
   return (
    <div><h2>Radicar Medidas</h2>
     <Card className="upload-medida-card">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}  >
           <Autocomplete
             disablePortal
             size="small"
@@ -103,7 +85,7 @@ function SometerMedidaForm() {
             )}
           </Dropzone>
           <div className='form_options'>
-            <Button variant="contained" type="submit" color="primary" endIcon={<SaveIcon />}>
+            <Button variant="contained" onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
               Guardar
             </Button>
           </div>

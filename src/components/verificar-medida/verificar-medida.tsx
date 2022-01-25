@@ -1,27 +1,29 @@
 import * as React from 'react';
-import { DataGrid, GridColDef, GridValueGetterFullParams, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValueGetterFullParams, GridValueGetterParams, GridSortModel } from '@mui/x-data-grid';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import {tipo_medidas, estado_medidas, Medida} from '../utils/utils';
 import Tooltip from '@mui/material/Tooltip';
 import { NavLink } from "react-router-dom";
-
-async function getMedidasData(){
-    const medidas_url = "http://localhost:9000/medidas";
-    const data = await fetch(medidas_url);
-    const medidas = await data.json();
-    console.log(medidas);
-    return medidas;
-  }
+import MedidaService from '../../services/Medida';
 
 export default function MedidasTable() {
+    const ms = new MedidaService;
     const [medidas, setMedidas] = React.useState<Medida[]>([]);
   
+    const [sortModel, setSortModel] = React.useState<GridSortModel>([
+      {
+        field: 'createdAt',
+        sort: 'desc',
+      },
+    ]);
+
     const columns: GridColDef[] = [
       { field: 'id', headerName: 'ID', width: 30 },
       { 
         field: 'createdAt', 
         headerName: 'Fecha', 
+       
         renderCell: (params: GridValueGetterParams<Date>) => { 
           if((params as GridValueGetterFullParams).value){
             let date: string | Date = new Date((params as GridValueGetterFullParams).value);
@@ -40,16 +42,22 @@ export default function MedidasTable() {
           var result = tipo_medidas.filter(obj => {
             return obj.value === (params as GridValueGetterFullParams).value
           });
+          if(result.length > 0) {
             return (<p>{result[0].label}</p>);
+          }
+          else{
+            return null;
+          }
+            
         }, 
         width: 120 },
-      {
+       {
         field: 'medidaFile',
         headerName: 'Archivo',
         sortable: false,
         renderCell: (params: GridValueGetterParams<string>) => { 
             if((params as GridValueGetterFullParams).value){
-                return (<Button>Download</Button>);
+                return (<Button>Descargar</Button>);
             }
             else return null;  
         },
@@ -77,9 +85,15 @@ export default function MedidasTable() {
           var result = estado_medidas.filter(obj => {
             return obj.value === (params as GridValueGetterFullParams).value
           });
+          if(result.length > 0) {
             return (<p>{result[0].label}</p>);
+          }
+          else{
+            return null;
+          }
         }, 
         width: 100 },
+      { field: 'numeroAsignado', headerName: 'Num.', width: 80 },
       {
         field: 'options',
         headerName: '',
@@ -96,8 +110,8 @@ export default function MedidasTable() {
     ];
 
     React.useEffect(() => {
-        getMedidasData().then((data) =>{
-            setMedidas(data);                     
+        ms.getMedidas().then((res) =>{
+            setMedidas(res.data);                     
       });
        
     }, []);
@@ -110,9 +124,12 @@ export default function MedidasTable() {
             <DataGrid
                 rows={medidas}
                 columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
+                pageSize={8}
+                rowsPerPageOptions={[8]}
                 checkboxSelection
+                rowHeight={35}
+                sortModel={sortModel}
+                onSortModelChange={(model) => setSortModel(model)}
             />
             </div>
            
