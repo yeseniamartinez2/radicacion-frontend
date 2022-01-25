@@ -8,50 +8,13 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import {tipo_medidas, modal_style, Representante, Medida} from '../utils/utils';
 import { useParams } from 'react-router-dom';
-
-async function putMedida(id, data){
-  const medidas_url = "http://localhost:9000/medidas/" + id;
-  const putRequestOptions = {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  };
-  fetch(medidas_url, putRequestOptions)
-      .then(async response => {
-          const isJson = response.headers.get('content-type')?.includes('application/json');
-          const data = isJson && await response.json();             
-      })
-      .catch(error => { 
-          console.error('There was an error!', error);
-      });
-}
-
-async function postAutor(authId, medId){
-    const medidas_url = "http://localhost:9000/medidas/autor/" + authId + "/" +medId;
-    await fetch(medidas_url);
-  }
-
-async function deleteAutor(authId, medId){
-    const medidas_url = "http://localhost:9000/medidas/delete_authors/"+ authId + "/" + medId;
-    console.log('deleting:' + medidas_url);
-    await fetch(medidas_url);
-  }  
-
-async function getMedida(id){
-    const medidas_url = "http://localhost:9000/medidas/" + id;
-    const data = await fetch(medidas_url);
-    const medidas = await data.json();
-    return medidas;
-  }  
-  
-  async function getRepresentantesData(){
-      const representantes_url = "http://localhost:9000/representantes";
-      const data = await fetch(representantes_url);
-      const representantes = await data.json();
-      return representantes;
-    } 
+import RepresentanteService from '../../services/Representante';
+import MedidaService from '../../services/Medida';
 
 function VerificarMedidaForm() {
+
+    const rs = new RepresentanteService();
+    const ms = new MedidaService();
     
     const [valueTipoMedida, setTipoMedida] = React.useState<string|undefined|null>('');  
     const [representantes, setRepresentantes] = React.useState<Representante[]>([]);
@@ -73,11 +36,6 @@ function VerificarMedidaForm() {
         setNumero(e.target.value)
     };
 
-    const test = () => {
-        console.log(valueInitialAuthors);
-        deleteAutor(1, 1);
-    }
-
   const handleSubmit = () => {
     console.log(valueInitialAuthors);
     var data = {
@@ -87,20 +45,18 @@ function VerificarMedidaForm() {
         'estado': 'sometida'
     }
 
-    if(data.tipo && data.titulo){
-      putMedida(id, data);
+  
+      ms.putMedida(id, data);
       setModalMessage('Medida añadida correctamente.')
-    }
-    else {
-      setModalMessage('Asegurese de que la forma está completada.')
-    }
+    
+   
 
     valueInitialAuthors?.forEach((r) => {
-        deleteAutor(r.id, id);
+        ms.deleteAutor(r.id, id);
     })
 
     valueAuthors?.forEach((r)=> {
-        postAutor(r.id, id);
+        ms.postAutor(r.id, id);
     });
 
     setOpen(true);
@@ -111,21 +67,21 @@ function VerificarMedidaForm() {
     //setValueTipoMedida(null);     
   }
   React.useEffect(() => {
-    getRepresentantesData().then((data) =>{
-      data.forEach(function (element) {
+    rs.getRepresentantes().then((res) =>{
+      res.data.forEach(function (element) {
         element.label = element.nombre + " " + element.apellido1 + " " + element.apellido2;
       });
-    setRepresentantes(data);     
+    setRepresentantes(res.data);     
     });   
-    getMedida(id).then((data) => {
-      setTitle(data.titulo);
-      setTipoMedida(data.tipo);
+    ms.getMedida(id).then((res) => {
+      console.log(res);
+      setTitle(res.data.titulo);
+      setTipoMedida(res.data.tipo);
       var result = tipo_medidas.filter(obj => {
-        return obj.value === data.tipo;
+        return obj.value === res.data.tipo;
       });
       setValueLabel(result[0]);
-      setInitialAuthors(data.Representantes);
-      
+      setInitialAuthors(res.data.Representantes);
       
     }) 
 }, []);
@@ -189,11 +145,8 @@ function VerificarMedidaForm() {
                 />
           
           <div className='form_options'>
-            <Button variant="contained" type="submit" color="primary" endIcon={<SaveIcon />}>
+            <Button variant="contained" onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
               Guardar
-            </Button>
-            <Button variant="contained" onClick={test}>
-              test
             </Button>
           </div>
         
