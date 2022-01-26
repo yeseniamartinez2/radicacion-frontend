@@ -1,19 +1,16 @@
-import React from "react";
 import './styles.css'
 import './components/someter-medida/someter-medida.css';
 import './components/verificar-medida/verificar-medida.css';
+import './components/sign-in-box/sign-in-box.css';
 import SometerMedidaForm from './components/someter-medida/someter-medida';
 import MedidasTable from "./components/verificar-medida/verificar-medida";
 import VerificarMedidaForm from "./components/verificar-medida-form/verificar-medida-form";
+import { SignInBox } from './components/sign-in-box/sign-in-box';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
-import {NavLink} from 'react-router-dom';
-import MedidaForm from "./components/verificar-medida/form";
+import { useIsAuthenticated } from "@azure/msal-react";
+import { PageLayout } from "./components/page-layout/page-layout";
+import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 const theme = createTheme({
   palette: {
 
@@ -33,44 +30,29 @@ const theme = createTheme({
   },
   spacing: 4
 });
-function App()
-{
+function App(){
+  const isAuthenticated = useIsAuthenticated();
     return (
-      
+      <PageLayout>
         <ThemeProvider theme={theme}>
-          <Router>
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
-                    <Toolbar>
-                    {/*<IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
-                    </IconButton> */}
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Cámara de Representantes
-                    </Typography>
-                    <Button><NavLink to="/verificacion">Verificacion</NavLink></Button> 
-                    <Button><NavLink to="/radicacion">Radicacion</NavLink></Button>
-                    <Button color="inherit">Login</Button>
-                    </Toolbar>
-                </AppBar>
-            </Box>
         <div className='App'>
-          
-            <Routes>      
-              <Route path="/verificacion" element={<MedidasTable />}  />
-              <Route path="/verificacion/:id" element={<VerificarMedidaForm />}/>
-              <Route path="/radicacion" element={<SometerMedidaForm />} />
-            </Routes> 
+        <AuthenticatedTemplate>
+          <Router>
+            
+                <Routes>      
+                  <Route path="/verificacion" element={<MedidasTable />}  />
+                  <Route path="/verificacion/:id" element={<VerificarMedidaForm />}/>
+                  <Route path="/radicacion" element={<SometerMedidaForm />} />
+                </Routes> 
+            
+          </Router>
+        </AuthenticatedTemplate>
+        <UnauthenticatedTemplate>
+                <SignInBox />
+        </UnauthenticatedTemplate>
         </div>
-        </Router>
         </ThemeProvider>
-      
+      </PageLayout>
     );
 }
 

@@ -1,0 +1,13 @@
+.sign-in-card {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 30px;
+}
+
+.sign-in-card p {
+    text-align: center;
+}

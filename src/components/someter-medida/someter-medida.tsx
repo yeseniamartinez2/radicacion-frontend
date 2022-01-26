@@ -7,8 +7,6 @@ import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
 import {tipo_medidas, modal_style} from '../utils/utils';
 import MedidaService from '../../services/Medida';
 import Alert from '@mui/material/Alert';
