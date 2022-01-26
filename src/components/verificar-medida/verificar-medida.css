@@ -10,3 +10,8 @@
     column-gap: 10px;
   
 }
+
+.no_asignado {
+    font-style: italic;
+    color: darkgray;
+}

@@ -19,7 +19,11 @@ export default function MedidasTable() {
     ]);
 
     const columns: GridColDef[] = [
-      { field: 'id', headerName: 'ID', width: 30 },
+      { 
+        field: 'id', 
+        headerName: 'ID', 
+        width: 30
+      },
       { 
         field: 'createdAt', 
         headerName: 'Fecha', 
@@ -34,7 +38,20 @@ export default function MedidasTable() {
              
       },
         width: 100 },
-      { field: 'titulo', headerName: 'Título', width: 160 },
+      { 
+        field: 'titulo', 
+        headerName: 'Título', 
+        renderCell: (params: GridValueGetterParams<string>) => { 
+          console.log((params as GridValueGetterFullParams).value);
+          if((params as GridValueGetterFullParams).value === null){
+            
+            return (<p className="no_asignado">Título no asignado</p>);
+          }
+          else {
+            return (<p>{(params as GridValueGetterFullParams).value}</p>)
+          } ;
+        },
+        width: 160 },
       { 
         field: 'tipo', 
         headerName: 'Tipo',
@@ -52,14 +69,13 @@ export default function MedidasTable() {
         }, 
         width: 120 },
        {
-        field: 'medidaFile',
+        field: 'filename',
         headerName: 'Archivo',
         sortable: false,
         renderCell: (params: GridValueGetterParams<string>) => { 
-            if((params as GridValueGetterFullParams).value){
-                return (<Button>Descargar</Button>);
-            }
-            else return null;  
+            const url = "http://localhost:9000/" + (params as GridValueGetterFullParams).value;
+            return (<Button><a href={url} target="_blank">Ver</a></Button>);
+             
         },
         width: 100,
       },

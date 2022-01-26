@@ -10,42 +10,50 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import {tipo_medidas, modal_style} from '../utils/utils';
-import axios from 'axios';
 import MedidaService from '../../services/Medida';
+import Alert from '@mui/material/Alert';
 
 function SometerMedidaForm() {
     const ms = new MedidaService();
-    const [valueTipoMedida, setValueTipoMedida] = React.useState<string|undefined|null>('');
-    const [valueMedidaFile, setValueMedidaFile] = React.useState<File|undefined|null>(null);
-    const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
-    const [open, setOpen] = React.useState(false);
-    const handleClose = () => setOpen(false);
+    const [valueTipoMedida, setTipoMedida] = React.useState<string>('');
+    const [valueMedidaFile, setMedidaFile] = React.useState<Blob | string>('');
+    const [valueFilename, setFilename] = React.useState<string>('');
+    const [error, setError] = React.useState(false);
+    const [success, setSuccess] = React.useState(false);
 
-  const handleSubmit = () => {
-    var data = {
-      'medidaFile': valueMedidaFile,
-      'tipo': valueTipoMedida,
-      'estado': 'sometida'
-    }
-    if(data.tipo){
-      ms.createMedida(data);
-      setModalMessage('Medida añadida correctamente.')
+  const handleClose = () => setError(false);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    let formData = new FormData();
+    formData.append('tipo', valueTipoMedida);
+    formData.append('estado', 'sometida');
+    formData.append('filename', valueFilename);
+    formData.append('medidaFile', valueMedidaFile);
+
+    if(valueMedidaFile === '' || valueTipoMedida === ''){
+      setError(true);
+      
     }
     else {
-      setModalMessage('Asegurese de que la forma está completada.')
+      ms.createMedida(formData).then((res) => {
+        if(res.status === 200) {
+          setSuccess(true);
+        }
+      });
     }
-    setOpen(true);
   };
 
+
   const clearForm = () => {
-  //setValueMedidaFile('');
-    //setValueTipoMedida(null);     
+  //setMedidaFile('');
+    //setTipoMedida(null);     
   }
 
   return (
    <div><h2>Radicar Medidas</h2>
     <Card className="upload-medida-card">
-      <form onSubmit={handleSubmit}  >
+      <form encType="multipart/form">
           <Autocomplete
             disablePortal
             size="small"
@@ -55,25 +63,30 @@ function SometerMedidaForm() {
             renderInput={(params) => <TextField  {...params} label="Tipo de Medida" />}
             onChange={(event,value) => {
               console.log(value?.value);
-              setValueTipoMedida(value?.value);
+              if(value){
+                setTipoMedida(value.value);
               }
-            }
+            }}
           />
           <Dropzone onDrop={acceptedFiles => {
                 console.log(acceptedFiles[0]);
-                //const blob = new Blob(acceptedFiles[0]);
-                setValueMedidaFile(acceptedFiles[0]);
+                setFilename(acceptedFiles[0].name);
+                setMedidaFile(acceptedFiles[0]);                
               }
             }
           >
             {({getRootProps, getInputProps}) => (
               <section>
                 <div className="dropzone" {...getRootProps()}>
-                  <input {...getInputProps()} />                
+                  <input {...getInputProps()} type="file" name="medidaFile" id="medidaFile" />                
                     { valueMedidaFile ? 
                       <div className="file">
-                        <p>{valueMedidaFile.name}</p>
-                        <IconButton className='delete-file' aria-label="delete" onClick={() => setValueMedidaFile(null)}  size="small">
+                        <p>{valueFilename}</p>
+                        <IconButton 
+                          className='delete-file' 
+                          aria-label="delete" 
+                          onClick={() => setMedidaFile('')}  
+                          size="small">
                           <ClearIcon fontSize="small"/>
                         </IconButton>
                       </div>
@@ -85,24 +98,22 @@ function SometerMedidaForm() {
             )}
           </Dropzone>
           <div className='form_options'>
-            <Button variant="contained" onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
+            <Button variant="contained" type='submit' onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
               Guardar
             </Button>
           </div>
         
       </form>  
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={modal_style}>
-          {modalMessage ? modalMessage : null}
-        </Box>
-      </Modal>
+      
 
     </Card>
+    { error ? 
+      <Alert className="feedback-message" severity="error">Asegúrese de que la forma esté completada.</Alert> 
+    : null }
+    { success ? 
+      <Alert className="feedback-message" severity= "success">La medida fue sometida exitosamente.</Alert> 
+    : null }
+    
     </div>
 
   );

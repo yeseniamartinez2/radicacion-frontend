@@ -1,5 +1,6 @@
 .upload-medida-card {
     width: 30vw;
+    min-width: 280px;
     padding: 30px 25px 25px 25px;
     height: auto;
     
@@ -47,4 +48,8 @@
 .delete-file{
     min-width: 20px;
     max-height: 30px;
+}
+
+.feedback-message{
+    margin-top: 10px;
 }

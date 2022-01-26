@@ -61,7 +61,7 @@ function App()
                 </AppBar>
             </Box>
         <div className='App'>
-            
+          
             <Routes>      
               <Route path="/verificacion" element={<MedidasTable />}  />
               <Route path="/verificacion/:id" element={<VerificarMedidaForm />}/>

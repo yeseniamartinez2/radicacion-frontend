@@ -24,8 +24,12 @@ export default class MedidaService {
           });
     }
 
+    config = {     
+        headers: { 'content-type': 'multipart/form-data' }
+    }
+
     createMedida(body){
-        axios.post(baseURL, body);
+        return axios.post("http://localhost:9000/medidas", body, this.config);
     }
 
     deleteAutor(authId, medId){
