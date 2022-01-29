@@ -1,0 +1,10 @@
+.verificar-medida-form{
+    display: flex;
+    align-items: flex-start;
+    column-gap: 10px;
+}
+
+.back-button {
+    width: 58px;
+    height: 58px;
+}

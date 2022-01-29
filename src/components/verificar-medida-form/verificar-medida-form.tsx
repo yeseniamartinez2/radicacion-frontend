@@ -7,18 +7,25 @@ import SaveIcon from '@mui/icons-material/Save';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import {tipo_medidas, modal_style, Representante, Medida} from '../utils/utils';
-import { useParams } from 'react-router-dom';
+import { useParams,  useNavigate } from 'react-router-dom';
 import RepresentanteService from '../../services/Representante';
 import MedidaService from '../../services/Medida';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { NavLink } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
+import { useIsAuthenticated } from "@azure/msal-react";
+import {  useMsal } from "@azure/msal-react";
 
 function VerificarMedidaForm() {
 
     const rs = new RepresentanteService();
     const ms = new MedidaService();
-    
+    const navigate = useNavigate();
     const [valueTipoMedida, setTipoMedida] = React.useState<string|undefined|null>('');  
+    const [tipoMedidaObj, setTipoMedidaObj] = React.useState<{ label: string; value: string; } | null | undefined>(null);
     const [representantes, setRepresentantes] = React.useState<Representante[]>([]);
-    const [valueLabel, setValueLabel] = React.useState<any>(undefined);
     const id = useParams().id;
     const [valueTitle, setTitle] = React.useState<string>('');
     const [valueNumero, setNumero] = React.useState<number|undefined>(undefined);
@@ -26,7 +33,34 @@ function VerificarMedidaForm() {
     const [valueInitialAuthors, setInitialAuthors] = React.useState<Array<Representante>|null|undefined>([]);
     const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
     const [open, setOpen] = React.useState(false);
-    const handleClose = () => setOpen(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
     const onTextChange = (e: any) => {
         setTitle(e.target.value)
@@ -52,11 +86,11 @@ function VerificarMedidaForm() {
    
 
     valueInitialAuthors?.forEach((r) => {
-        ms.deleteAutor(r.id, id);
+        ms.deleteAutor(r.id, id, null);
     })
 
     valueAuthors?.forEach((r)=> {
-        ms.postAutor(r.id, id);
+        ms.postAutor(r.id, id, null);
     });
 
     setOpen(true);
@@ -67,20 +101,20 @@ function VerificarMedidaForm() {
     //setValueTipoMedida(null);     
   }
   React.useEffect(() => {
-    rs.getRepresentantes().then((res) =>{
+    rs.getRepresentantes(null).then((res) =>{
       res.data.forEach(function (element) {
         element.label = element.nombre + " " + element.apellido1 + " " + element.apellido2;
       });
     setRepresentantes(res.data);     
     });   
-    ms.getMedida(id).then((res) => {
+    ms.getMedida(id, null).then((res) => {
       console.log(res);
       setTitle(res.data.titulo);
       setTipoMedida(res.data.tipo);
       var result = tipo_medidas.filter(obj => {
         return obj.value === res.data.tipo;
       });
-      setValueLabel(result[0]);
+      setTipoMedidaObj(result[0]);
       setInitialAuthors(res.data.Representantes);
       
     }) 
@@ -88,7 +122,12 @@ function VerificarMedidaForm() {
 
 
   return (
-   <div><h2>Radicar Medidas</h2>
+   <div className="verificar-medida-form">
+      <IconButton className="back-button" aria-label="back" size="large">
+        <NavLink to="/verificacion"><ArrowBackIcon /></NavLink>
+      </IconButton>
+    <div>
+    <h3>Verificar Medida: {id}</h3>
     <Card className="upload-medida-card">
       <form onSubmit={handleSubmit}>
       <TextField 
@@ -96,7 +135,7 @@ function VerificarMedidaForm() {
                 label="Título" 
                 variant="outlined" 
                 size="small" 
-                //value={valueTitle}
+                value={valueTitle}
                 onChange={onTextChange}
       
               />
@@ -104,6 +143,7 @@ function VerificarMedidaForm() {
             disablePortal
             size="small"
             options={tipo_medidas}
+            value={tipoMedidaObj}
             getOptionLabel={(tipo) => tipo.label}
             isOptionEqualToValue={(option, value) => option.value === value.value}
             renderInput={(params) => <TextField  {...params} label="Tipo de Medida" />}
@@ -145,24 +185,27 @@ function VerificarMedidaForm() {
                 />
           
           <div className='form_options'>
-            <Button variant="contained" onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
+            <Button variant="contained" onClick={() => {
+              handleSubmit();
+              navigate("/verificacion");
+            }} color="primary" endIcon={<SaveIcon />}>
               Guardar
             </Button>
           </div>
         
       </form>  
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={modal_style}>
-          {modalMessage ? modalMessage : null}
-        </Box>
-      </Modal>
+     
 
     </Card>
+
+    <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="Note archived"
+        action={action}
+      />
+    </div>  
     </div>
 
   );

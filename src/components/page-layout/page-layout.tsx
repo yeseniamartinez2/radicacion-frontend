@@ -8,6 +8,11 @@ import { useIsAuthenticated } from "@azure/msal-react";
 import { SignInButton } from "../sign-in-button/SignInButton";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { SignOutButton } from "../sign-out/sign-out-button";
+import logo from "../../assets/logo.png";
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "../../authConfig";
+import { ProfileData } from "../profile-data/profile-data";
+import { callMsGraph } from "../../graph";
 const theme = createTheme({
   palette: {
 
@@ -29,7 +34,10 @@ const theme = createTheme({
 });
 export const PageLayout = (props) => {
     const isAuthenticated = useIsAuthenticated();
+    const { instance, accounts } = useMsal();
+    const [graphData, setGraphData] = React.useState<any>(null);
 
+    const name = accounts[0] && accounts[0].name;
     return (
         <>
             <ThemeProvider theme={theme}>
@@ -45,18 +53,19 @@ export const PageLayout = (props) => {
                         >
                             <MenuIcon />
                         </IconButton> */}
+                        <img src={logo} className="logo" alt="logo de la Cámara de Representantes de Puerto Rico" />
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             Cámara de Representantes
                         </Typography>
                         
                     
                     { isAuthenticated ?
-                        <div>
-                            <Button><a href="http://localhost:8081/verificacion">Verificacion</a></Button> 
-                            <Button><a href="http://localhost:8081/radicacion">Radicacion</a></Button>
+                        <div className="top-bar-login">
+                            <p><strong>Hola, </strong>{name}</p>
                             <SignOutButton />
                         </div> 
-                        : <SignInButton /> }
+                        : 
+                        <SignInButton /> }
             
                     
                         </Toolbar>

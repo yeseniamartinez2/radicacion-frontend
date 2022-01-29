@@ -97,7 +97,7 @@ function SometerMedidaForm() {
           </Dropzone>
           <div className='form_options'>
             <Button variant="contained" type='submit' onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
-              Guardar
+              Someter
             </Button>
           </div>
         

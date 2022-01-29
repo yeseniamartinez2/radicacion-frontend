@@ -6,6 +6,8 @@
     flex-wrap: wrap;
     flex-direction: column;
     padding: 30px;
+    height: 100px;
+    margin-top: 50px;
 }
 
 .sign-in-card p {

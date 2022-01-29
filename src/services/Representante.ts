@@ -4,17 +4,13 @@ const baseURL = "http://localhost:9000/representantes/";
 
 
 export default class RepresentanteService {
-    headers = {
-        crossDomain: "true",
-        Accept: "*/*",
-       /* Authorization: `Bearer ${localStorage.token}`,
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Origin, Content-Type, Authorization, X-Auth-Token",
-        "Content-Type": "application/x-www-form-urlencoded",*/
-      };
-    getRepresentantes() {
+    
+    getRepresentantes(token) {
+      const config = {
+        Authorization: `Bearer ${token}`
+    }
         return axios.get(baseURL, {
-            headers: this.headers,
+            headers: config
           });
     }
 }

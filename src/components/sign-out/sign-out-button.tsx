@@ -15,6 +15,6 @@ export const SignOutButton = () => {
     const { instance } = useMsal();
 
     return (
-        <Button color="inherit" variant="outlined" className="sign-out" onClick={() => handleLogout(instance)}>Salir</Button>
+        <Button size="small" color="inherit" variant="outlined" className="sign-out" onClick={() => handleLogout(instance)}>Salir</Button>
     );
 }

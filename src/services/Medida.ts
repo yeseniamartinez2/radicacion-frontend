@@ -4,23 +4,22 @@ const baseURL = "http://localhost:9000/medidas/";
 
 
 export default class MedidaService {
-    headers = {
-        crossDomain: "true",
-        Accept: "*/*",
-       /* Authorization: `Bearer ${localStorage.token}`,
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Origin, Content-Type, Authorization, X-Auth-Token",
-        "Content-Type": "application/x-www-form-urlencoded",*/
-      };
-    getMedidas() {
+
+    getMedidas(token: string) {
+        const config = {
+            Authorization: `Bearer ${token}`
+        }
         return axios.get(baseURL, {
-            headers: this.headers,
+            headers: config,
           });
     }
 
-    getMedida(id) {
+    getMedida(id, token) {
+        const config = {
+            Authorization: `Bearer ${token}`
+        }
         return axios.get(baseURL + id, {
-            headers: this.headers,
+            headers: config,
           });
     }
 
@@ -32,17 +31,23 @@ export default class MedidaService {
         return axios.post("http://localhost:9000/medidas", body, this.config);
     }
 
-    deleteAutor(authId, medId){
+    deleteAutor(authId, medId, token){
+        const config = {
+            Authorization: `Bearer ${token}`
+        }
         const url = baseURL + 'delete_authors/' + authId + '/' + medId;
         axios.get(url, {
-            headers: this.headers,
+            headers: config,
           })
     }
 
-    postAutor(authId, medId){
+    postAutor(authId, medId, token){
+        const config = {
+            Authorization: `Bearer ${token}`
+        }
         const url = baseURL + 'autor/' + authId + '/' + medId;
         axios.get(url, {
-            headers: this.headers,
+            headers: config
           })
     }
 

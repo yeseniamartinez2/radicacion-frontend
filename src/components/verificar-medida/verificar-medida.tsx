@@ -6,17 +6,40 @@ import {tipo_medidas, estado_medidas, Medida} from '../utils/utils';
 import Tooltip from '@mui/material/Tooltip';
 import { NavLink } from "react-router-dom";
 import MedidaService from '../../services/Medida';
+import { loginRequest } from "../../authConfig";
+import { useIsAuthenticated } from "@azure/msal-react";
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 
 export default function MedidasTable() {
     const ms = new MedidaService;
     const [medidas, setMedidas] = React.useState<Medida[]>([]);
-  
+    const isAuthenticated = useIsAuthenticated();
+    const { instance, accounts } = useMsal();
+    const [accesstoken, setAccessToken] = React.useState<any>(null);
+
+
     const [sortModel, setSortModel] = React.useState<GridSortModel>([
       {
         field: 'createdAt',
         sort: 'desc',
       },
     ]);
+
+    const requestToken = () => {
+      const request = {
+        ...loginRequest,
+        account: accounts[0]
+    };
+
+    // Silently acquires an access token which is then attached to a request for Microsoft Graph data
+    instance.acquireTokenSilent(request).then((response) => {
+        setAccessToken(response.accessToken);
+    }).catch((e) => {
+        instance.acquireTokenPopup(request).then((response) => {
+          setAccessToken(response.accessToken);
+        });
+    });
+    }
 
     const columns: GridColDef[] = [
       { 
@@ -126,14 +149,16 @@ export default function MedidasTable() {
     ];
 
     React.useEffect(() => {
-        ms.getMedidas().then((res) =>{
+       requestToken();
+        ms.getMedidas(accesstoken).then((res) =>{
+          console.log(accesstoken);
             setMedidas(res.data);                     
       });
        
     }, []);
   return (
     <div>
-      <h2>Validar Medidas</h2>
+      <h2>Verificar Medidas</h2>
  
         <Card className="table-card">
             <div style={{ height: 400, width: '100%' }}>    
