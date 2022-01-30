@@ -4,8 +4,6 @@ import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
 import {tipo_medidas, modal_style, Representante, Medida} from '../utils/utils';
 import { useParams,  useNavigate } from 'react-router-dom';
 import RepresentanteService from '../../services/Representante';
@@ -15,8 +13,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { NavLink } from 'react-router-dom';
 import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
-import { useIsAuthenticated } from "@azure/msal-react";
-import {  useMsal } from "@azure/msal-react";
+import { useSelector } from 'react-redux'
+
 
 function VerificarMedidaForm() {
 
@@ -33,7 +31,7 @@ function VerificarMedidaForm() {
     const [valueInitialAuthors, setInitialAuthors] = React.useState<Array<Representante>|null|undefined>([]);
     const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
     const [open, setOpen] = React.useState(false);
-
+    const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
   const handleClick = () => {
     setOpen(true);
   };
@@ -80,7 +78,7 @@ function VerificarMedidaForm() {
     }
 
   
-      ms.putMedida(id, data);
+      ms.putMedida(id, data, accessToken);
       setModalMessage('Medida añadida correctamente.')
     
    
@@ -101,13 +99,13 @@ function VerificarMedidaForm() {
     //setValueTipoMedida(null);     
   }
   React.useEffect(() => {
-    rs.getRepresentantes(null).then((res) =>{
+    rs.getRepresentantes(accessToken).then((res) =>{
       res.data.forEach(function (element) {
         element.label = element.nombre + " " + element.apellido1 + " " + element.apellido2;
       });
     setRepresentantes(res.data);     
     });   
-    ms.getMedida(id, null).then((res) => {
+    ms.getMedida(id, accessToken).then((res) => {
       console.log(res);
       setTitle(res.data.titulo);
       setTipoMedida(res.data.tipo);
@@ -118,7 +116,7 @@ function VerificarMedidaForm() {
       setInitialAuthors(res.data.Representantes);
       
     }) 
-}, []);
+}, [accessToken]);
 
 
   return (

@@ -8,13 +8,17 @@ import '@fontsource/roboto/700.css';
 import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
 import { msalConfig } from "./authConfig";
+import store from './app/store'
+import { Provider } from 'react-redux'
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
 ReactDOM.render(
     <React.StrictMode>
         <MsalProvider instance={msalInstance}>
-            <App />
+            <Provider store={store}>
+                <App />
+            </Provider>
         </MsalProvider>
     </React.StrictMode>,
     document.getElementById('root'),

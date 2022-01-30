@@ -6,53 +6,57 @@ const baseURL = "http://localhost:9000/medidas/";
 export default class MedidaService {
 
     getMedidas(token: string) {
-        const config = {
-            Authorization: `Bearer ${token}`
-        }
         return axios.get(baseURL, {
-            headers: config,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
           });
     }
 
     getMedida(id, token) {
-        const config = {
-            Authorization: `Bearer ${token}`
-        }
         return axios.get(baseURL + id, {
-            headers: config,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
           });
     }
 
-    config = {     
-        headers: { 'content-type': 'multipart/form-data' }
-    }
+    
 
-    createMedida(body){
-        return axios.post("http://localhost:9000/medidas", body, this.config);
+    createMedida(body, token){
+        const config = {     
+            headers: { 
+                'content-type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`
+             }
+        }
+        return axios.post("http://localhost:9000/medidas", body, config);
     }
 
     deleteAutor(authId, medId, token){
-        const config = {
-            Authorization: `Bearer ${token}`
-        }
         const url = baseURL + 'delete_authors/' + authId + '/' + medId;
         axios.get(url, {
-            headers: config,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
           })
     }
 
     postAutor(authId, medId, token){
-        const config = {
-            Authorization: `Bearer ${token}`
-        }
         const url = baseURL + 'autor/' + authId + '/' + medId;
         axios.get(url, {
-            headers: config
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
           })
     }
 
-    putMedida(id, body){
-        axios.put(baseURL + id,  body );
+    putMedida(id, body, token){
+        axios.put(baseURL + id,  body, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+          } );
     }
   
 

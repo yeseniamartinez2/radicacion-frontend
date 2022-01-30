@@ -10,6 +10,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import {tipo_medidas, modal_style} from '../utils/utils';
 import MedidaService from '../../services/Medida';
 import Alert from '@mui/material/Alert';
+import { useSelector } from 'react-redux'
+
 
 function SometerMedidaForm() {
     const ms = new MedidaService();
@@ -18,7 +20,8 @@ function SometerMedidaForm() {
     const [valueFilename, setFilename] = React.useState<string>('');
     const [error, setError] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
-
+    const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
+  
   const handleClose = () => setError(false);
 
   const handleSubmit = (event) => {
@@ -34,7 +37,7 @@ function SometerMedidaForm() {
       
     }
     else {
-      ms.createMedida(formData).then((res) => {
+      ms.createMedida(formData, accessToken).then((res) => {
         if(res.status === 200) {
           setSuccess(true);
         }
