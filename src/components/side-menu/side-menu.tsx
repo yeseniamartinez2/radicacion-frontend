@@ -12,7 +12,7 @@ export default function SideMenu() {
     <Paper sx={{ width: 210 }} elevation={4} square>
       <MenuList dense>
         <MenuItem>
-          <ListItemText><NavLink to="/radicacion">Radicar Medida</NavLink></ListItemText>
+          <ListItemText><NavLink to="/radicacion">Someter Medida</NavLink></ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem>

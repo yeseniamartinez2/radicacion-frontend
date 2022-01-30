@@ -14,9 +14,19 @@ import { NavLink } from 'react-router-dom';
 import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSelector } from 'react-redux'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 
 function VerificarMedidaForm() {
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const rs = new RepresentanteService();
     const ms = new MedidaService();
@@ -32,9 +42,13 @@ function VerificarMedidaForm() {
     const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
     const [open, setOpen] = React.useState(false);
     const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
-  const handleClick = () => {
-    setOpen(true);
-  };
+    const handleClickOpenDialog = () => {
+      setOpen(true);
+    };
+  
+    const handleCloseDialog = () => {
+      setOpen(false);
+    };
 
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -42,6 +56,18 @@ function VerificarMedidaForm() {
     }
 
     setOpen(false);
+  };
+
+  const handleCloseAndPut = (event: React.SyntheticEvent | Event, reason?: string) => {
+    var data = {
+      'titulo': valueTitle,
+      'tipo': valueTipoMedida,
+      'numeroAsignado': valueNumero,
+      'estado': 'radicada'
+  }
+
+    setOpen(false);
+    ms.putMedida(id, data, accessToken);
   };
 
   const action = (
@@ -70,17 +96,12 @@ function VerificarMedidaForm() {
 
   const handleSubmit = () => {
     console.log(valueInitialAuthors);
-    var data = {
-        'titulo': valueTitle,
-        'tipo': valueTipoMedida,
-        'numeroAsignado': valueNumero,
-        'estado': 'sometida'
-    }
+    
 
   
-      ms.putMedida(id, data, accessToken);
+      //ms.putMedida(id, data, accessToken);
       setModalMessage('Medida añadida correctamente.')
-    
+    handleClickOpenDialog();
    
 
     valueInitialAuthors?.forEach((r) => {
@@ -185,7 +206,7 @@ function VerificarMedidaForm() {
           <div className='form_options'>
             <Button variant="contained" onClick={() => {
               handleSubmit();
-              navigate("/verificacion");
+            
             }} color="primary" endIcon={<SaveIcon />}>
               Guardar
             </Button>
@@ -196,13 +217,29 @@ function VerificarMedidaForm() {
 
     </Card>
 
-    <Snackbar
+    <Dialog
+        fullScreen={fullScreen}
         open={open}
-        autoHideDuration={6000}
         onClose={handleClose}
-        message="Note archived"
-        action={action}
-      />
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {"Radicar medidas es irreversible."}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Confirma que quieres continuar con esta acción. 
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Cancelar
+          </Button>
+          <Button onClick={handleCloseAndPut} autoFocus>
+            Continuar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>  
     </div>
 

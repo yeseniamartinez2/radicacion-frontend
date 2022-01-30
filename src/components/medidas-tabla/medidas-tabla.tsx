@@ -50,7 +50,7 @@ export default function MedidasTable() {
             return (<p className="no_asignado">Título no asignado</p>);
           }
           else {
-            return (<p>{(params as GridValueGetterFullParams).value}</p>)
+            return (<Tooltip title={(params as GridValueGetterFullParams).value}><p>{(params as GridValueGetterFullParams).value}</p></Tooltip>)
           } ;
         },
         width: 160 },
@@ -70,26 +70,22 @@ export default function MedidasTable() {
             
         }, 
         width: 120 },
-       {
-        field: 'filename',
-        headerName: 'Archivo',
-        sortable: false,
-        renderCell: (params: GridValueGetterParams<string>) => { 
-            const url = "http://localhost:9000/" + (params as GridValueGetterFullParams).value;
-            return (<Button><a href={url} target="_blank">Ver</a></Button>);
-             
-        },
-        width: 100,
-      },
+        { field: 'numeroAsignado', headerName: 'Num.', width: 80 },
       { 
         field: 'Representantes', 
         headerName: 'Autor/es', 
         renderCell: (params: GridValueGetterParams<string>) => { 
           let authors = '';
-          (params as GridValueGetterFullParams).value.forEach((a) => {
+          (params as GridValueGetterFullParams).value.forEach((a, i) => {
             let autor = (a.nombre+" "+ a.apellido1+ " " +a.apellido2);
             console.log(autor);
-            authors = authors + autor + ", ";
+            if((i + 1) === (params as GridValueGetterFullParams).value.length){
+              authors = authors + autor;
+            }
+            else {
+              authors = authors + autor + ", ";
+            }
+            
           })
           
           return (
@@ -111,7 +107,17 @@ export default function MedidasTable() {
           }
         }, 
         width: 100 },
-      { field: 'numeroAsignado', headerName: 'Num.', width: 80 },
+        {
+          field: 'filename',
+          headerName: 'Archivo',
+          sortable: false,
+          renderCell: (params: GridValueGetterParams<string>) => { 
+              const url = "http://localhost:9000/" + (params as GridValueGetterFullParams).value;
+              return (<Button><a href={url} target="_blank">Ver</a></Button>);
+               
+          },
+          width: 100,
+        },
       {
         field: 'options',
         headerName: '',

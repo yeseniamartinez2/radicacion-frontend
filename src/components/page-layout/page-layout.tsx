@@ -35,9 +35,11 @@ const theme = createTheme({
 export const PageLayout = (props) => {
     const isAuthenticated = useIsAuthenticated();
     const { instance, accounts } = useMsal();
-    const [graphData, setGraphData] = React.useState<any>(null);
-
     const name = accounts[0] && accounts[0].name;
+
+    const [isAuthorized, setIsAuthorized] = React.useState(false);
+
+
     return (
         <>
             <ThemeProvider theme={theme}>

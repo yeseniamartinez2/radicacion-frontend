@@ -21,8 +21,13 @@ function SometerMedidaForm() {
     const [error, setError] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
     const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
-  
+   
   const handleClose = () => setError(false);
+
+  const clearForm = () => {
+    setMedidaFile(''); 
+    setFilename('');  
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -32,27 +37,26 @@ function SometerMedidaForm() {
     formData.append('filename', valueFilename);
     formData.append('medidaFile', valueMedidaFile);
 
-    if(valueMedidaFile === '' || valueTipoMedida === ''){
+    if(valueMedidaFile === '' || valueTipoMedida === '' || typeof valueTipoMedida === "undefined" || valueTipoMedida === null){
       setError(true);
+      setSuccess(false);
       
     }
-    else {
+    else if (valueMedidaFile && valueTipoMedida && valueFilename) {
       ms.createMedida(formData, accessToken).then((res) => {
         if(res.status === 200) {
           setSuccess(true);
+          setError(false);
+          clearForm();
+      
         }
       });
     }
   };
 
-
-  const clearForm = () => {
-  //setMedidaFile('');
-    //setTipoMedida(null);     
-  }
-
+  
   return (
-   <div><h2>Radicar Medidas</h2>
+   <div><h2>Someter Medida</h2>
     <Card className="upload-medida-card">
       <form encType="multipart/form">
           <Autocomplete

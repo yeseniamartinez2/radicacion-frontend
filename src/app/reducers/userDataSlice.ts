@@ -6,7 +6,8 @@ export const userDataSlice = createSlice({
     userName: '',
     apiAccessToken: '',
     msGraphAccessToken: '',
-    email: ''
+    email: '',
+    roles: null
   },
   reducers: {
     updateName: (state, action) => {
@@ -20,10 +21,13 @@ export const userDataSlice = createSlice({
     },
     updateEmail: (state, action) => {
       state.email = action.payload
+    },
+    updateRoles: (state, action) => {
+      state.roles = action.payload.roles
     }
   }
 })
 
-export const { updateName, updateMSAccessToken, updateEmail, updateApiAccessToken } = userDataSlice.actions
+export const { updateName, updateMSAccessToken, updateEmail, updateApiAccessToken, updateRoles } = userDataSlice.actions
 
 export default userDataSlice.reducer

@@ -13,7 +13,7 @@ import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import React from 'react';
 import { PageLayout } from "./components/page-layout/page-layout";
 import { useDispatch } from 'react-redux'
-import { updateMSAccessToken, updateApiAccessToken, updateEmail, updateName } from './app/reducers/userDataSlice'
+import { updateMSAccessToken, updateApiAccessToken, updateEmail, updateName, updateRoles } from './app/reducers/userDataSlice'
 import { loginRequest, protectedResources } from "./authConfig";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
@@ -40,36 +40,41 @@ function App(){
   }*/
 
   React.useEffect(() => {
+    console.log(accounts[0]);
     const msRequest = {
       ...loginRequest,
       account: accounts[0]
     };
-    if (inProgress === "none" && accounts.length > 0) {
-        // Silently acquires an access token which is then attached to a request for Microsoft Graph data
-      instance.acquireTokenSilent(msRequest).then((response) => {
-        dispatch(updateMSAccessToken(response.accessToken));
-    }).catch((e) => {
-        instance.acquireTokenPopup(msRequest).then((response) => {
-          dispatch(updateMSAccessToken(response.accessToken));
-        });
-    });
-      }
     const apiRequest = {
       scopes: protectedResources.api.scopes,
       account: accounts[0]
     }  
+    if (inProgress === "none" && accounts.length > 0) {
+          // Silently acquires an access token which is then attached to a request for Microsoft Graph data
+        instance.acquireTokenSilent(msRequest).then((response) => {
+            dispatch(updateMSAccessToken(response.accessToken));
+          }).catch((e) => {
+            instance.acquireTokenPopup(msRequest).then((response) => {
+              dispatch(updateMSAccessToken(response.accessToken));
+            });
+        });
 
-      if (inProgress === "none" && accounts.length > 0) {
-        
         instance.acquireTokenSilent(apiRequest).then((response) => {
-            dispatch(updateApiAccessToken(response.accessToken));
+          dispatch(updateApiAccessToken(response.accessToken));
         }).catch((e) => {
-          
-          instance.acquireTokenPopup(apiRequest).then((response) => {
-            dispatch(updateApiAccessToken(response.accessToken));
-          });
-        });  
-      }
+        
+        instance.acquireTokenPopup(apiRequest).then((response) => {
+          dispatch(updateApiAccessToken(response.accessToken));
+        });
+      }); 
+
+      dispatch(updateEmail(accounts[0].username));
+      dispatch(updateName(accounts[0].name));
+      dispatch(updateRoles(accounts[0].idTokenClaims));
+    }
+    
+
+      
   }, [inProgress, accounts, instance]);
 
   
