@@ -24,16 +24,15 @@ import { useTheme } from '@mui/material/styles';
 
 
 function VerificarMedidaForm() {
-  const [openDialog, setOpenDialog] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const rs = new RepresentanteService();
     const ms = new MedidaService();
-    const navigate = useNavigate();
     const [valueTipoMedida, setTipoMedida] = React.useState<string|undefined|null>('');  
     const [tipoMedidaObj, setTipoMedidaObj] = React.useState<{ label: string; value: string; } | null | undefined>(null);
     const [representantes, setRepresentantes] = React.useState<Representante[]>([]);
+    const [medidaURL, setMedidaUrl] = React.useState<string>('');
     const id = useParams().id;
     const [valueTitle, setTitle] = React.useState<string>('');
     const [valueNumero, setNumero] = React.useState<number|undefined>(undefined);
@@ -68,6 +67,13 @@ function VerificarMedidaForm() {
 
     setOpen(false);
     ms.putMedida(id, data, accessToken);
+    valueInitialAuthors?.forEach((r) => {
+      ms.deleteAutor(r.id, id, null);
+  })
+
+  valueAuthors?.forEach((r)=> {
+      ms.postAutor(r.id, id, null);
+  });
   };
 
   const action = (
@@ -104,13 +110,7 @@ function VerificarMedidaForm() {
     handleClickOpenDialog();
    
 
-    valueInitialAuthors?.forEach((r) => {
-        ms.deleteAutor(r.id, id, null);
-    })
-
-    valueAuthors?.forEach((r)=> {
-        ms.postAutor(r.id, id, null);
-    });
+    
 
     setOpen(true);
   };
@@ -121,10 +121,20 @@ function VerificarMedidaForm() {
   }
   React.useEffect(() => {
     rs.getRepresentantes(accessToken).then((res) =>{
+      let data: Representante[] = [];
+      data.push({ label: "Delegación PPD", siglas_partido: "PPD"});
+      data.push({ label: "Delegación PNP", siglas_partido: "PNP"});
+      data.push({ label: "Delegación PIP", siglas_partido: "PIP"});
+      data.push({ label: "Delegación MVC", siglas_partido: "MVC"});
+      data.push({ label: "Delegación PD", siglas_partido: "PD"});
+      data.push({ label: "Todos los Representantes", siglas_partido: "Todos"});
       res.data.forEach(function (element) {
         element.label = element.nombre + " " + element.apellido1 + " " + element.apellido2;
       });
-    setRepresentantes(res.data);     
+      let rep_data = res.data;
+      ;
+    setRepresentantes(rep_data.concat(data));  
+       
     });   
     ms.getMedida(id, accessToken).then((res) => {
       console.log(res);
@@ -135,6 +145,7 @@ function VerificarMedidaForm() {
       });
       setTipoMedidaObj(result[0]);
       setInitialAuthors(res.data.Representantes);
+      setMedidaUrl("http://localhost:9000/" + res.data.filename);
       
     }) 
 }, [accessToken]);
@@ -149,6 +160,7 @@ function VerificarMedidaForm() {
     <h3>Verificar Medida: {id}</h3>
     <Card className="upload-medida-card">
       <form onSubmit={handleSubmit}>
+      <a href={medidaURL} target="_blank"><Button variant="outlined">Ver Archivo</Button></a>
       <TextField 
                 id="outlined-basic" 
                 label="Título" 

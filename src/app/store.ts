@@ -4,7 +4,6 @@ import medidasReducer from './reducers/medidasSlice';
 
 export default configureStore({
   reducer: {
-    userData: userDataReducer,
-    medidas: medidasReducer
+    userData: userDataReducer
   }
 })

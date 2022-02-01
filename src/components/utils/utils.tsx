@@ -58,17 +58,24 @@ export interface Medida {
     tipo: string,
     medidaFile: any,
     Representantes: any,
-    estado: string
+    estado: string,
+    RepresentanteMedidas?: {
+        MedidaId: number,
+        RepresentanteId: number
+    },
+    createdAt: Date,
+    updatedAt: Date
 
 }
 
 export interface Representante {
-  apellido1: string,
-  apellido2: string,
-  createdAt: Date,
+  apellido1?: string,
+  apellido2?: string,
+  createdAt?: Date,
   siglas_partido: string,
-  id: number,
+  id?: number,
   label: string,
-  nombre: string,
-  updatedAt: Date  
+  nombre?: string,
+  updatedAt?: Date,
+  Medidas?: Array<Medida>  
 }

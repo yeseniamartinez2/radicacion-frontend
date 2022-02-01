@@ -2,16 +2,20 @@ import * as React from 'react';
 import { DataGrid, GridColDef, GridValueGetterFullParams, GridValueGetterParams, GridSortModel } from '@mui/x-data-grid';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import {tipo_medidas, estado_medidas, Medida} from '../utils/utils';
+import {tipo_medidas, estado_medidas, Representante, Medida} from '../utils/utils';
 import Tooltip from '@mui/material/Tooltip';
 import { NavLink } from "react-router-dom";
 import MedidaService from '../../services/Medida';
+import RepresentanteService from '../../services/Representante';
 import { useSelector } from 'react-redux'
 
-export default function MedidasTable() {
+export default function UserMedidasTable() {
     const ms = new MedidaService;
+    const rs = new RepresentanteService;
+    const [representante, setRepresentante] = React.useState<Representante>();
     const [medidas, setMedidas] = React.useState<Medida[]>([]);
     const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
+    const userEmail: string = useSelector((state: any) => state.userData.email);
 
     const [sortModel, setSortModel] = React.useState<GridSortModel>([
       {
@@ -129,16 +133,22 @@ export default function MedidasTable() {
         },
         width: 100,
       }
-    ];
+    ];  
 
+        
     React.useEffect(() => {
-        ms.getMedidas(accessToken).then((res) =>{setMedidas(res.data)})
-    }, [accessToken]);
+      
+        //ms.getMedidas(accessToken).then((res) =>{setMedidas(res.data)})
+        rs.getRepresentanteByEmail(accessToken, userEmail).then((res) => {setMedidas(res.data.Medidas)});
+       
+
+     
+    }, [accessToken, userEmail]);
   return (
     <div>
-      <h2>Verificar Medidas</h2>
-      {console.log(medidas)}
-        <Card className="table-card">
+      { [].forEach(console.log)}
+      <h2>Mis Medidas</h2>
+      <Card className="table-card">
             <div style={{ height: 400, width: '100%' }}>    
             <DataGrid
                 rows={medidas}
@@ -153,6 +163,7 @@ export default function MedidasTable() {
             </div>
            
         </Card>
+        
     
     </div>
 

@@ -13,4 +13,13 @@ export default class RepresentanteService {
             headers: config
           });
     }
+
+    getRepresentanteByEmail(token,  email) {
+      const config = {     
+            headers: { 
+                Authorization: `Bearer ${token}`
+             }
+        }
+        return axios.get(baseURL + "email/" + email, config);
+    }
 }

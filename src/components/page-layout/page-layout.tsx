@@ -3,16 +3,13 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import { useIsAuthenticated } from "@azure/msal-react";
 import { SignInButton } from "../sign-in-button/SignInButton";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { SignOutButton } from "../sign-out/sign-out-button";
 import logo from "../../assets/logo.png";
 import { useMsal } from "@azure/msal-react";
-import { loginRequest } from "../../authConfig";
-import { ProfileData } from "../profile-data/profile-data";
-import { callMsGraph } from "../../graph";
+
 const theme = createTheme({
   palette: {
 
@@ -34,10 +31,8 @@ const theme = createTheme({
 });
 export const PageLayout = (props) => {
     const isAuthenticated = useIsAuthenticated();
-    const { instance, accounts } = useMsal();
+    const { accounts } = useMsal();
     const name = accounts[0] && accounts[0].name;
-
-    const [isAuthorized, setIsAuthorized] = React.useState(false);
 
 
     return (
