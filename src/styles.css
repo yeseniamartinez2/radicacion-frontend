@@ -15,7 +15,7 @@ h1, h2, h3, h4, h5, p {
 .authenticated-main {
   width: 100%;
     display: grid;
-    grid-template-columns: 1fr 5fr;
+    grid-template-columns: 170px 5fr;
     grid-template-rows: auto;
     grid-template-areas: "side main main main main main";
     column-gap: 20px;
@@ -30,7 +30,7 @@ h1, h2, h3, h4, h5, p {
     justify-content: flex-start;
     align-items: flex-start;
     width: 100%;
-    margin-top: 10px;
+    margin: 20px;
 
 }
 
@@ -70,4 +70,18 @@ body {
   }
   .menu-button:active {
     color: white!important;
+  }
+
+  @media  (min-width:300px) and (max-width: 900px){
+    .authenticated-main {
+      width: 100%;
+        display: flex;
+        
+        margin-top: 0;
+        height: 90vh;
+    }
+
+    .sidemenu{
+      display: none;
+    }
   }

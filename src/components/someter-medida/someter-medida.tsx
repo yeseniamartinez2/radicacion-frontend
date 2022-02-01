@@ -11,7 +11,9 @@ import {tipo_medidas, modal_style} from '../utils/utils';
 import MedidaService from '../../services/Medida';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux'
-
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
 
 function SometerMedidaForm() {
     const ms = new MedidaService();
@@ -21,8 +23,10 @@ function SometerMedidaForm() {
     const [error, setError] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
     const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
-   
-  const handleClose = () => setError(false);
+    const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+ 
 
   const clearForm = () => {
     setMedidaFile(''); 
@@ -50,6 +54,10 @@ function SometerMedidaForm() {
           clearForm();
       
         }
+      }).catch((e) => {
+        console.log(e);
+        handleOpen();
+
       });
     }
   };
@@ -118,8 +126,25 @@ function SometerMedidaForm() {
     { success ? 
       <Alert className="feedback-message" severity= "success">La medida fue sometida exitosamente.</Alert> 
     : null }
+
+<Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modal_style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Error
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Ha ocurrido un error en el sistema. Favor notificar a la oficina de Tecnología e Informática.  
+          </Typography>
+        </Box>
+      </Modal>
     
     </div>
+
 
   );
 }

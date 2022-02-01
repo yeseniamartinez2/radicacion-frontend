@@ -9,3 +9,25 @@
     height: 50px;
     margin: 5px 10px 5px 5px;
 }
+
+.toggle-menu{
+    display: none;
+}
+
+
+@media  (min-width:300px) and (max-width: 900px){
+    .top-bar-login{
+        display: none;
+    }
+
+    
+
+    .header  {
+        display: none;
+    }
+    .toolbar{
+        padding: 5px 10px 5px 10px;
+        justify-content: space-between;
+    }
+   
+}

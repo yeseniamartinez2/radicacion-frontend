@@ -15,3 +15,14 @@
     font-style: italic;
     color: darkgray;
 }
+
+.edit_icon {
+ 
+    color: rgb(75, 75, 75);
+}
+
+@media  (min-width:300px) and (max-width: 900px){
+    .table-card {
+        width: 90vw;
+    }
+}

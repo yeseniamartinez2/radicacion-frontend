@@ -8,11 +8,7 @@ import {tipo_medidas, modal_style, Representante, Medida} from '../utils/utils';
 import { useParams,  useNavigate } from 'react-router-dom';
 import RepresentanteService from '../../services/Representante';
 import MedidaService from '../../services/Medida';
-import IconButton from '@mui/material/IconButton';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { NavLink } from 'react-router-dom';
-import Snackbar from '@mui/material/Snackbar';
-import CloseIcon from '@mui/icons-material/Close';
+import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -21,8 +17,11 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-
-
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
 function VerificarMedidaForm() {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -36,25 +35,26 @@ function VerificarMedidaForm() {
     const id = useParams().id;
     const [valueTitle, setTitle] = React.useState<string>('');
     const [valueNumero, setNumero] = React.useState<number|undefined>(undefined);
-    const [valueAuthors, setAuthors] = React.useState<Array<Representante>|null|undefined>([]);
+    const [valueAuthors, setAuthors] = React.useState<Array<Representante>>([]);
     const [valueInitialAuthors, setInitialAuthors] = React.useState<Array<Representante>|null|undefined>([]);
-    const [modalMessage, setModalMessage] = React.useState<string|null|void>('');
-    const [open, setOpen] = React.useState(false);
+    const [openDialog, setOpenDialog] = React.useState(false);
     const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
+    const [error, setError] = React.useState(false);
+    const [success, setSuccess] = React.useState(false);
+    const [openModal, setOpenModal] = React.useState(false);
+  const handleOpenModal = () => setOpenDialog(true);
+  const handleCloseModal= () => setOpenDialog(false);
+    
     const handleClickOpenDialog = () => {
-      setOpen(true);
-    };
-  
-    const handleCloseDialog = () => {
-      setOpen(false);
+      setOpenDialog(true);
     };
 
-  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+  const handleCloseDialog= (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
 
-    setOpen(false);
+    setOpenDialog(false);
   };
 
   const handleCloseAndPut = (event: React.SyntheticEvent | Event, reason?: string) => {
@@ -65,33 +65,35 @@ function VerificarMedidaForm() {
       'estado': 'radicada'
   }
 
-    setOpen(false);
-    ms.putMedida(id, data, accessToken);
-    valueInitialAuthors?.forEach((r) => {
-      ms.deleteAutor(r.id, id, null);
-  })
+    setOpenDialog(false);
+    if(valueTitle && valueTipoMedida && valueNumero && valueAuthors?.length > 0){
+      ms.putMedida(id, data, accessToken).then((res) => {
+        if(res.status === 200) {
+          setSuccess(true);
+          setError(false);
+          valueInitialAuthors?.forEach((r) => {
+            ms.deleteAutor(r.id, id, null);
+          })
 
-  valueAuthors?.forEach((r)=> {
-      ms.postAutor(r.id, id, null);
-  });
+          valueAuthors?.forEach((r)=> {
+            ms.postAutor(r.id, id, null);
+          });
+        }
+      }).catch((e) => {
+        console.log(e);
+        handleOpenModal();
+  
+      });
+    }
+    else{
+      setSuccess(false);
+      setError(true);
+    }
+    
+    
   };
 
-  const action = (
-    <React.Fragment>
-      <Button color="secondary" size="small" onClick={handleClose}>
-        UNDO
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={handleClose}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </React.Fragment>
-  );
-
+ 
     const onTextChange = (e: any) => {
         setTitle(e.target.value)
       };
@@ -101,18 +103,7 @@ function VerificarMedidaForm() {
     };
 
   const handleSubmit = () => {
-    console.log(valueInitialAuthors);
-    
-
-  
-      //ms.putMedida(id, data, accessToken);
-      setModalMessage('Medida añadida correctamente.')
     handleClickOpenDialog();
-   
-
-    
-
-    setOpen(true);
   };
 
   const clearForm = () => {
@@ -122,12 +113,12 @@ function VerificarMedidaForm() {
   React.useEffect(() => {
     rs.getRepresentantes(accessToken).then((res) =>{
       let data: Representante[] = [];
-      data.push({ label: "Delegación PPD", siglas_partido: "PPD"});
-      data.push({ label: "Delegación PNP", siglas_partido: "PNP"});
-      data.push({ label: "Delegación PIP", siglas_partido: "PIP"});
-      data.push({ label: "Delegación MVC", siglas_partido: "MVC"});
-      data.push({ label: "Delegación PD", siglas_partido: "PD"});
-      data.push({ label: "Todos los Representantes", siglas_partido: "Todos"});
+      data.push({ label: "Delegación PPD", siglas_partido: "PPD", value: "delegacion"});
+      data.push({ label: "Delegación PNP", siglas_partido: "PNP", value: "delegacion"});
+      data.push({ label: "Delegación PIP", siglas_partido: "PIP", value: "delegacion"});
+      data.push({ label: "Delegación MVC", siglas_partido: "MVC", value: "delegacion"});
+      data.push({ label: "Delegación PD", siglas_partido: "PD", value: "delegacion"});
+      data.push({ label: "Todos los Representantes", siglas_partido: "Todos", value: "delegacion"});
       res.data.forEach(function (element) {
         element.label = element.nombre + " " + element.apellido1 + " " + element.apellido2;
       });
@@ -140,6 +131,7 @@ function VerificarMedidaForm() {
       console.log(res);
       setTitle(res.data.titulo);
       setTipoMedida(res.data.tipo);
+      setNumero(res.data.numeroAsignado);
       var result = tipo_medidas.filter(obj => {
         return obj.value === res.data.tipo;
       });
@@ -153,14 +145,18 @@ function VerificarMedidaForm() {
 
   return (
    <div className="verificar-medida-form">
-      <IconButton className="back-button" aria-label="back" size="large">
-        <NavLink to="/verificacion"><ArrowBackIcon /></NavLink>
-      </IconButton>
+     <Breadcrumbs aria-label="breadcrumb">
+        <Link underline="hover" color="inherit" href="/verificacion">
+          Verificar Medidas
+        </Link>
+        <Typography color="text.primary">Radicar</Typography>
+      </Breadcrumbs>
+    
     <div>
-    <h3>Verificar Medida: {id}</h3>
+    <h3>Radicar Medida: {id}</h3>
     <Card className="upload-medida-card">
       <form onSubmit={handleSubmit}>
-      <a href={medidaURL} target="_blank"><Button variant="outlined">Ver Archivo</Button></a>
+      <a href={medidaURL} target="_blank"><Button variant="outlined">Abrir Archivo</Button></a>
       <TextField 
                 id="outlined-basic" 
                 label="Título" 
@@ -210,8 +206,12 @@ function VerificarMedidaForm() {
                   label="Número Asignado" 
                   variant="outlined" 
                   size="small" 
-                 // value={valueNumero}
+                  type="number"
+                  value={valueNumero}
                   onChange={onNumberChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
         
                 />
           
@@ -229,10 +229,17 @@ function VerificarMedidaForm() {
 
     </Card>
 
+    { error ? 
+      <Alert className="feedback-message" severity="error">Asegúrese de que la forma esté completada.</Alert> 
+    : null }
+    { success ? 
+      <Alert className="feedback-message" severity= "success">La medida fue sometida exitosamente.</Alert> 
+    : null }
+
     <Dialog
         fullScreen={fullScreen}
-        open={open}
-        onClose={handleClose}
+        open={openDialog}
+        onClose={handleCloseDialog}
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">
@@ -244,7 +251,7 @@ function VerificarMedidaForm() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button autoFocus onClick={handleCloseDialog}>
             Cancelar
           </Button>
           <Button onClick={handleCloseAndPut} autoFocus>
@@ -252,6 +259,22 @@ function VerificarMedidaForm() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modal_style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Error
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            Ha ocurrido un error en el sistema. Favor notificar a la oficina de Tecnología e Informática.  
+          </Typography>
+        </Box>
+      </Modal>
     </div>  
     </div>
 

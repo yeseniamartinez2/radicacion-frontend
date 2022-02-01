@@ -30,7 +30,7 @@ export default class MedidaService {
                 Authorization: `Bearer ${token}`
              }
         }
-        return axios.post("http://localhost:9000/medidas", body, config);
+        return axios.post(baseURL , body, config);
     }
 
     deleteAutor(authId, medId, token){
@@ -52,12 +52,21 @@ export default class MedidaService {
     }
 
     putMedida(id, body, token){
-        axios.put(baseURL + id,  body, {
+        return axios.put(baseURL + id,  body, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
           } );
     }
+
+    getMedidasByEmail(token,  email) {
+        const config = {     
+              headers: { 
+                  Authorization: `Bearer ${token}`
+               }
+          }
+          return axios.get(baseURL + "email/" + email, config);
+      }
   
 
 

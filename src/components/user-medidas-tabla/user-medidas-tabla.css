@@ -1,0 +1,37 @@
+.user-table-card {
+    width: 56vw;
+}
+.radicada, .sometida, .en_evaluacion {
+    border-radius: 7px;
+    padding: 2px 6px 2px 6px;
+    color: rgb(34, 34, 34);
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+    font-size: 12px;
+}
+
+.radicada {
+    border-color: #142016;
+    background-color: #9acaa1;
+}
+
+.sometida {
+    border-color: darkred;
+    background-color: rgb(240, 156, 156);
+}
+
+.en_evaluacion{
+    border-color: rgb(131, 119, 17);
+    background-color: rgb(240, 223, 76);
+}
+
+.download_icon {
+    color: rgb(75, 75, 75);
+}
+
+@media  (min-width:300px) and (max-width: 900px){
+    .user-table-card {
+        width: 90vw;
+    }
+}

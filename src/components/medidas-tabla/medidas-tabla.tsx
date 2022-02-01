@@ -7,12 +7,24 @@ import Tooltip from '@mui/material/Tooltip';
 import { NavLink } from "react-router-dom";
 import MedidaService from '../../services/Medida';
 import { useSelector } from 'react-redux'
-
+import DownloadIcon from '@mui/icons-material/Download';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 export default function MedidasTable() {
     const ms = new MedidaService;
     const [medidas, setMedidas] = React.useState<Medida[]>([]);
     const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
+    
+    const setEnEvaluacion = (row) => {
+      var data = {
+        'estado': 'en_evaluacion'
+      }
 
+      if(row.estado === "sometida"){
+
+        ms.putMedida(row.id, data, accessToken);
+      }
+      
+    }
     const [sortModel, setSortModel] = React.useState<GridSortModel>([
       {
         field: 'createdAt',
@@ -24,7 +36,8 @@ export default function MedidasTable() {
       { 
         field: 'id', 
         headerName: 'ID', 
-        width: 30
+        width: 30,
+        align: 'center'
       },
       { 
         field: 'createdAt', 
@@ -39,20 +52,23 @@ export default function MedidasTable() {
           else return null;
              
       },
-        width: 100 },
+        width: 100,
+        align: 'center',
+        disableColumnMenu: true },
       { 
         field: 'titulo', 
         headerName: 'Título', 
         renderCell: (params: GridValueGetterParams<string>) => { 
           if((params as GridValueGetterFullParams).value === null){
             
-            return (<p className="no_asignado">Título no asignado</p>);
+            return (<p className="no_asignado">No asignado</p>);
           }
           else {
             return (<Tooltip title={(params as GridValueGetterFullParams).value}><p>{(params as GridValueGetterFullParams).value}</p></Tooltip>)
           } ;
         },
-        width: 160 },
+        width: 160,
+        disableColumnMenu: true },
       { 
         field: 'tipo', 
         headerName: 'Tipo',
@@ -68,12 +84,33 @@ export default function MedidasTable() {
           }
             
         }, 
-        width: 120 },
-        { field: 'numeroAsignado', headerName: 'Num.', width: 80 },
+        width: 120,
+        align: 'left',
+        disableColumnMenu: true },
+        { 
+          field: 'numeroAsignado', 
+          headerName: 'Num.', 
+          width: 80, 
+          align: 'center',
+          renderCell: (params: GridValueGetterParams<string>) => { 
+            if((params as GridValueGetterFullParams).value === null){
+              
+              return (<p className="no_asignado">N/A</p>);
+            }
+            else {
+              return (<Tooltip title={(params as GridValueGetterFullParams).value}><p>{(params as GridValueGetterFullParams).value}</p></Tooltip>)
+            } ;
+          },
+          disableColumnMenu: true 
+        },
       { 
         field: 'Representantes', 
         headerName: 'Autor/es', 
-        renderCell: (params: GridValueGetterParams<string>) => { 
+        renderCell: (params: GridValueGetterParams<string>) => {
+          if((params as GridValueGetterFullParams).value.length === 0){
+            return (<p className="no_asignado">No asignados</p>);
+          } 
+          
           let authors = '';
           (params as GridValueGetterFullParams).value.forEach((a, i) => {
             let autor = (a.nombre+" "+ a.apellido1+ " " +a.apellido2);
@@ -89,7 +126,8 @@ export default function MedidasTable() {
           return (
             <Tooltip title={authors}><p>{authors}</p></Tooltip>); 
         },
-        width: 160 },
+        width: 160,
+        disableColumnMenu: true },
       { 
         field: 'estado', 
         headerName: 'Estado', 
@@ -98,23 +136,27 @@ export default function MedidasTable() {
             return obj.value === (params as GridValueGetterFullParams).value
           });
           if(result.length > 0) {
-            return (<p>{result[0].label}</p>);
+            return (<p className={(params as GridValueGetterFullParams).value}>{result[0].label}</p>);
           }
           else{
             return null;
           }
         }, 
-        width: 100 },
+        width: 100,
+        align: 'center',
+        disableColumnMenu: true },
         {
           field: 'filename',
           headerName: 'Archivo',
           sortable: false,
           renderCell: (params: GridValueGetterParams<string>) => { 
               const url = "http://localhost:9000/" + (params as GridValueGetterFullParams).value;
-              return (<Button><a href={url} target="_blank">Ver</a></Button>);
+              return (<a href={url} target="_blank" className='download_icon'><DownloadIcon onClick={() => setEnEvaluacion((params as GridValueGetterFullParams).row)} /></a>);
                
           },
           width: 100,
+          align: 'center',
+          disableColumnMenu: true
         },
       {
         field: 'options',
@@ -123,11 +165,18 @@ export default function MedidasTable() {
         renderCell: (params: GridValueGetterParams<string>) => { 
             return (
               <NavLink to={"/verificacion/" + params.row.id }>
-                <Button>Verificar </Button>
+                {!(params.row.estado==="radicada") ?
+                  <Button onClick={() => setEnEvaluacion((params as GridValueGetterFullParams).row)}>Radicar </Button>
+                  :
+                  <BorderColorIcon fontSize='small' className='edit_icon' />
+                }
+                
               </NavLink>
             );
         },
         width: 100,
+        align: 'center',
+        disableColumnMenu: true
       }
     ];
 
@@ -145,7 +194,6 @@ export default function MedidasTable() {
                 columns={columns}
                 pageSize={8}
                 rowsPerPageOptions={[8]}
-                checkboxSelection
                 rowHeight={35}
                 sortModel={sortModel}
                 onSortModelChange={(model) => setSortModel(model)}

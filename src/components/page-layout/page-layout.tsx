@@ -9,7 +9,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { SignOutButton } from "../sign-out/sign-out-button";
 import logo from "../../assets/logo.png";
 import { useMsal } from "@azure/msal-react";
-
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 const theme = createTheme({
   palette: {
 
@@ -40,18 +41,10 @@ export const PageLayout = (props) => {
             <ThemeProvider theme={theme}>
                 <Box sx={{ flexGrow: 1 }}>
                     <AppBar position="static">
-                        <Toolbar>
-                        {/*<IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                        >
-                            <MenuIcon />
-                        </IconButton> */}
+                        <Toolbar className="toolbar">
+                        
                         <img src={logo} className="logo" alt="logo de la Cámara de Representantes de Puerto Rico" />
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6" className="header" component="div" sx={{ flexGrow: 1 }}>
                             Cámara de Representantes
                         </Typography>
                         
@@ -63,7 +56,15 @@ export const PageLayout = (props) => {
                         </div> 
                         : 
                         <SignInButton /> }
-            
+            <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{ mr: 2 }}
+                        >
+                            <MenuIcon />
+                        </IconButton> 
                     
                         </Toolbar>
                     </AppBar>

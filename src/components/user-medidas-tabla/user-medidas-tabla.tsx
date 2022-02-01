@@ -16,7 +16,7 @@ export default function UserMedidasTable() {
     const [medidas, setMedidas] = React.useState<Medida[]>([]);
     const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
     const userEmail: string = useSelector((state: any) => state.userData.email);
-
+    const [loading, setLoading] = React.useState(true);
     const [sortModel, setSortModel] = React.useState<GridSortModel>([
       {
         field: 'createdAt',
@@ -24,11 +24,18 @@ export default function UserMedidasTable() {
       },
     ]);
 
+    const test = () => {
+      var z = ['a'];
+      var y = ['b'];
+      console.log(z.concat(y));
+    }
+
     const columns: GridColDef[] = [
       { 
         field: 'id', 
         headerName: 'ID', 
-        width: 30
+        width: 30,
+        align: 'center'
       },
       { 
         field: 'createdAt', 
@@ -43,7 +50,8 @@ export default function UserMedidasTable() {
           else return null;
              
       },
-        width: 100 },
+        width: 100,
+        align: 'center' },
       { 
         field: 'titulo', 
         headerName: 'Título', 
@@ -71,29 +79,9 @@ export default function UserMedidasTable() {
             return null;
           }
             
-        }, 
-        width: 120 },
-        { field: 'numeroAsignado', headerName: 'Num.', width: 80 },
-      { 
-        field: 'Representantes', 
-        headerName: 'Autor/es', 
-        renderCell: (params: GridValueGetterParams<string>) => { 
-          let authors = '';
-          (params as GridValueGetterFullParams).value.forEach((a, i) => {
-            let autor = (a.nombre+" "+ a.apellido1+ " " +a.apellido2);
-            if((i + 1) === (params as GridValueGetterFullParams).value.length){
-              authors = authors + autor;
-            }
-            else {
-              authors = authors + autor + ", ";
-            }
-            
-          })
-          
-          return (
-            <Tooltip title={authors}><p>{authors}</p></Tooltip>); 
         },
-        width: 160 },
+        width: 120 },
+        { field: 'numeroAsignado', headerName: 'Num.', width: 80, align: 'center' },
       { 
         field: 'estado', 
         headerName: 'Estado', 
@@ -102,13 +90,14 @@ export default function UserMedidasTable() {
             return obj.value === (params as GridValueGetterFullParams).value
           });
           if(result.length > 0) {
-            return (<p>{result[0].label}</p>);
+            return (<p className={(params as GridValueGetterFullParams).value}>{result[0].label}</p>);
           }
           else{
             return null;
           }
         }, 
-        width: 100 },
+        width: 100,
+        align: 'center' },
         {
           field: 'filename',
           headerName: 'Archivo',
@@ -119,50 +108,60 @@ export default function UserMedidasTable() {
                
           },
           width: 100,
-        },
-      {
-        field: 'options',
-        headerName: '',
-        sortable: false,
-        renderCell: (params: GridValueGetterParams<string>) => { 
-            return (
-              <NavLink to={"/verificacion/" + params.row.id }>
-                <Button>Verificar </Button>
-              </NavLink>
-            );
-        },
-        width: 100,
-      }
+        }
     ];  
+
+    const getData = async (): Promise<Medida[]> => {
+      let firstMedidas = [];
+      let secondMedidas = [];
+   
+      await ms.getMedidasByEmail(accessToken, userEmail).then((res) =>{firstMedidas = res.data});
+      await rs.getRepresentanteByEmail(accessToken, userEmail).then((res) => secondMedidas = res.data.Medidas);
+
+      firstMedidas.concat(secondMedidas);
+
+      return secondMedidas.concat(firstMedidas);
+
+    }
 
         
     React.useEffect(() => {
-      
-        //ms.getMedidas(accessToken).then((res) =>{setMedidas(res.data)})
-        rs.getRepresentanteByEmail(accessToken, userEmail).then((res) => {setMedidas(res.data.Medidas)});
-       
-
+        getData().then((res) => {
+          setMedidas(res);
+        })
+        
+          
      
-    }, [accessToken, userEmail]);
+
+        if(medidas) {
+          setLoading(false);
+        }
+     
+    }, [accessToken, userEmail, loading]);
   return (
     <div>
-      { [].forEach(console.log)}
+      { test() }
       <h2>Mis Medidas</h2>
-      <Card className="table-card">
-            <div style={{ height: 400, width: '100%' }}>    
-            <DataGrid
-                rows={medidas}
-                columns={columns}
-                pageSize={8}
-                rowsPerPageOptions={[8]}
-                checkboxSelection
-                rowHeight={35}
-                sortModel={sortModel}
-                onSortModelChange={(model) => setSortModel(model)}
-            />
+      { loading ? 
+        <p>Loading....</p> : 
+        <Card className="user-table-card">
+        <div style={{ height: 450, width: '100%' }}>    
+        <DataGrid
+            rows={medidas}
+            columns={columns}
+            pageSize={8}
+            rowsPerPageOptions={[8]}
+            rowHeight={35}
+            sortModel={sortModel}
+            onSortModelChange={(model) => setSortModel(model)}
+        />
             </div>
-           
+          
         </Card>
+        
+        
+      }
+      
         
     
     </div>

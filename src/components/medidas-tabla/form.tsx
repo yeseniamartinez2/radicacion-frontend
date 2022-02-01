@@ -33,7 +33,7 @@ async function putMedida(id, data){
 }
 
 async function getMedida(id){
-  const medidas_url = "http://localhost:9000/medidas/" + id;
+  const medidas_url = process.env.API_URL + "medidas/" + id;
   const data = await fetch(medidas_url);
   const medidas = await data.json();
   return medidas;

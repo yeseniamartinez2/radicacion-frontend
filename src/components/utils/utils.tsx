@@ -77,5 +77,6 @@ export interface Representante {
   label: string,
   nombre?: string,
   updatedAt?: Date,
-  Medidas?: Array<Medida>  
+  Medidas?: Array<Medida>  ,
+  value?: string
 }

@@ -19,7 +19,7 @@ export default function SideMenu() {
     const roles = useSelector((state: any) => state.userData.roles);
 
   const onLoad = async () => {
-    if (inProgress === "none" && accounts.length > 0) {
+    if (inProgress === "none" && accounts.length > 0 && roles) {
         let intersection = roles.filter(role => role.includes("Medida.Radicar"));
         
         if (intersection.length > 0) {
@@ -34,7 +34,7 @@ React.useEffect(() => {
 
   
   return (
-    <Paper sx={{ width: 210 }} elevation={4} square>
+    <Paper className="sidemenu" sx={{ width: 170 }} elevation={4} square>
       <MenuList dense>
       
      
@@ -43,13 +43,14 @@ React.useEffect(() => {
         <ListItemText><NavLink to="/verificacion">Verificar Medidas</NavLink></ListItemText>
         </MenuItem>
         : 
-        <>
-        <MenuItem>
-          <ListItemText><NavLink to="/mis-medidas">Mis Medidas</NavLink></ListItemText>
-        </MenuItem>
-        <MenuItem>
-          <ListItemText><NavLink to="/radicacion">Someter Medida</NavLink></ListItemText>
-        </MenuItem></> }
+        <div>
+          <MenuItem>
+            <ListItemText><NavLink to="/mis-medidas">Mis Medidas</NavLink></ListItemText>
+          </MenuItem>
+          <MenuItem>
+            <ListItemText><NavLink to="/radicacion">Someter Medida</NavLink></ListItemText>
+          </MenuItem>
+        </div> }
         
       </MenuList>
     </Paper>

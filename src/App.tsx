@@ -4,6 +4,7 @@ import './components/medidas-tabla/medidas-tabla.css';
 import './components/sign-in-box/sign-in-box.css';
 import './components/page-layout/page-layout.css';
 import './components/verificar-medida-form/verificar-medida-form.css'
+import './components/user-medidas-tabla/user-medidas-tabla.css';
 import SometerMedidaForm from './components/someter-medida/someter-medida';
 import MedidasTable from "./components/medidas-tabla/medidas-tabla";
 import VerificarMedidaForm from "./components/verificar-medida-form/verificar-medida-form";
