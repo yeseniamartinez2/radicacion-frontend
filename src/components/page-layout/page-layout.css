@@ -2,6 +2,7 @@
     display: flex;
     align-items: center;
     column-gap: 10px;
+
 }
 
 .logo {
@@ -13,13 +14,17 @@
 .toggle-menu{
     display: none;
 }
-
+.toolbar {
+    margin-right: 13px;
+}
 
 @media  (min-width:300px) and (max-width: 900px){
-    .top-bar-login{
+    .user-welcome, .sign-out{
         display: none;
     }
-
+    .toggle-menu{
+        display: inline-block;
+    }
     
 
     .header  {
@@ -28,6 +33,7 @@
     .toolbar{
         padding: 5px 10px 5px 10px;
         justify-content: space-between;
+        margin-right: 0;
     }
    
 }

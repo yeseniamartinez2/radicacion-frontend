@@ -1,5 +1,6 @@
 .table-card {
     width: 80vw;
+    max-width: 975px;
 }
 
 .verificar-medida-modal form{

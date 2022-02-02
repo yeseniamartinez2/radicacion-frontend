@@ -2,7 +2,8 @@
   "name": "radicacion-frontend",
   "version": "0.1.0",
   "scripts": {
-    "start": "webpack serve --mode development --env=development"
+    "start": "webpack serve --mode development --env=development",
+    "build": "webpack --env production"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +57,7 @@
     "@reduxjs/toolkit": "^1.7.1",
     "@types/react-redux": "^7.1.22",
     "axios": "^0.25.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "file-saver": "^2.0.5",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1",

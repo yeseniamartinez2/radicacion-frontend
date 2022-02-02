@@ -12,4 +12,14 @@
 
 .sign-in-card p {
     text-align: center;
+ 
+}
+
+
+@media  (min-width:300px) and (max-width: 900px){
+    .sign-in-card {
+        width: 80%;
+        height: 150px;
+        margin-top: 150px;
+    }
 }

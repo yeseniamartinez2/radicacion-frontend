@@ -1,3 +1,4 @@
+
 export const tipo_medidas = [
     {
         "label": "P. de la C.",
@@ -50,7 +51,7 @@ export const modal_style = {
     border: '2px solid gray',
     boxShadow: 24,
     p: 4
-  };
+};
 
 export interface Medida {
     id: number,
@@ -64,19 +65,71 @@ export interface Medida {
         RepresentanteId: number
     },
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    numeroAsignado
 
 }
 
 export interface Representante {
-  apellido1?: string,
-  apellido2?: string,
-  createdAt?: Date,
-  siglas_partido: string,
-  id?: number,
-  label: string,
-  nombre?: string,
-  updatedAt?: Date,
-  Medidas?: Array<Medida>  ,
-  value?: string
+    apellido1?: string,
+    apellido2?: string,
+    createdAt?: Date,
+    siglas_partido: string,
+    id?: number,
+    label: string,
+    nombre?: string,
+    updatedAt?: Date,
+    Medidas?: Array<Medida>,
+    value?: string
+}
+
+//Set number of rows in table according to screen size
+export const numberOfRows = (width) => {
+    if (width < 900) {
+        return 13;
+    }
+    else {
+        return 8;
+    }
+}
+
+
+//Function for logging out
+export function handleLogout(instance) {
+    instance.logoutPopup().catch(e => {
+        console.error(e);
+    });
+}
+
+//Format Dates to user friendly string 
+export const formatDate = (value) => {
+    let date: string | Date = new Date(value);
+    date = (date.getDate()) + "/" + (date.getMonth() + 1) + "/" + (date.getFullYear());
+    return date;
+}
+
+//Tipo value to label 
+
+export const valueToLabel = (value) => {
+    var result = tipo_medidas.filter(obj => {
+        return obj.value === value
+      });
+      if (result.length > 0) {
+        return result[0].label;
+      }
+      else {
+        return null;
+      }
+}
+
+export const estadoValueToLabel = (value) => {
+    var result = estado_medidas.filter(obj => {
+        return obj.value === value
+      });
+      if (result.length > 0) {
+        return result[0].label;
+      }
+      else {
+        return null;
+      }
 }

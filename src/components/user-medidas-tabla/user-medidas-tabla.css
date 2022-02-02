@@ -1,7 +1,11 @@
 .user-table-card {
     width: 56vw;
 }
+
+
 .radicada, .sometida, .en_evaluacion {
+    grid-area: 'status';
+    justify-self: end;
     border-radius: 7px;
     padding: 2px 6px 2px 6px;
     color: rgb(34, 34, 34);
@@ -9,6 +13,8 @@
     border-style: solid;
     border-width: 1px;
     font-size: 12px;
+    max-width: 80px;
+    text-align: center;
 }
 
 .radicada {
@@ -30,8 +36,61 @@
     color: rgb(75, 75, 75);
 }
 
+.tabla-medidas{ 
+    height: 390px; 
+    width: 100%;
+ }
+
+ 
+
+ .medida-card {
+     width: 300px;
+     padding: 10px 30px 10px 30px;
+     margin: 5px;
+     height: 95px;
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     grid-template-rows: 45px 45px ;
+     grid-template-areas: "header status"
+        "date num";
+        justify-items: start;
+        align-items: center;
+ }
+
+ .card-medida-id{
+    grid-area: 'header';
+}
+
+.date{
+    grid-area: 'date';
+    display: flex;
+    flex-direction: column;
+}
+
+.date-label, .tipo-label {
+    font-size: 12px;
+    color: gray;
+
+}
+
+.number {
+    grid-area: 'num';
+    display: flex;
+    flex-direction: column;
+    justify-self: end;
+    text-align: right;
+}
+
+
+
 @media  (min-width:300px) and (max-width: 900px){
     .user-table-card {
         width: 90vw;
+      
     }
+
+    .tabla-medidas{ 
+        height: 600px; 
+    }
+   
 }

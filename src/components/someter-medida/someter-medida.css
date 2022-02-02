@@ -53,3 +53,9 @@
 .feedback-message{
     margin-top: 10px;
 }
+
+@media  (min-width:300px) and (max-width: 900px){
+    .upload-medida-card {
+        width: 77vw;
+    }
+}

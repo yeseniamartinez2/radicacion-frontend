@@ -3,55 +3,44 @@ import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Check from '@mui/icons-material/Check';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux'
-import { useMsal } from "@azure/msal-react";
-
 
 export default function SideMenu() {
-  const { instance, accounts, inProgress } = useMsal();
-    const name = accounts[0] && accounts[0].name;
+  const isAdmin = useSelector((state: any) => state.userData.admin);
 
-    const [isAdmin, setIsAdmin] = React.useState(false);
-    const roles = useSelector((state: any) => state.userData.roles);
 
-  const onLoad = async () => {
-    if (inProgress === "none" && accounts.length > 0 && roles) {
-        let intersection = roles.filter(role => role.includes("Medida.Radicar"));
-        
-        if (intersection.length > 0) {
-            setIsAdmin(true);
-        }
-    }
-}
 
-React.useEffect(() => {
-    onLoad();
-}, [roles]);
 
-  
   return (
     <Paper className="sidemenu" sx={{ width: 170 }} elevation={4} square>
       <MenuList dense>
-      
-     
-        { isAdmin ? 
-        <MenuItem>
-        <ListItemText><NavLink to="/verificacion">Verificar Medidas</NavLink></ListItemText>
-        </MenuItem>
-        : 
-        <div>
+        <NavLink to="/">
           <MenuItem>
-            <ListItemText><NavLink to="/mis-medidas">Mis Medidas</NavLink></ListItemText>
+            <ListItemText>Inicio</ListItemText>
           </MenuItem>
-          <MenuItem>
-            <ListItemText><NavLink to="/radicacion">Someter Medida</NavLink></ListItemText>
-          </MenuItem>
-        </div> }
-        
+        </NavLink>
+        {isAdmin ?
+          <NavLink to="/verificacion">
+            <MenuItem>
+              <ListItemText>Verificar Medidas</ListItemText>
+            </MenuItem>
+          </NavLink>
+          :
+          <div>
+            <NavLink to="/mis-medidas">
+              <MenuItem>
+                <ListItemText>Mis Medidas</ListItemText>
+              </MenuItem>
+            </NavLink>
+            <NavLink to="/radicacion">
+              <MenuItem>
+                <ListItemText>Someter Medida</ListItemText>
+              </MenuItem>
+            </NavLink>
+          </div>}
+
       </MenuList>
     </Paper>
   );
