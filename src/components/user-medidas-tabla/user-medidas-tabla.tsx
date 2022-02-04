@@ -48,7 +48,8 @@ export default function UserMedidasTable() {
         // to get a value that is either negative, positive, or zero.
         return b.id - a.id
       });
-      setMedidas(res);
+      const last5 = res.slice(0, 4);
+      setMedidas(last5);
     })
     if (medidas) {
       setLoading(false);
