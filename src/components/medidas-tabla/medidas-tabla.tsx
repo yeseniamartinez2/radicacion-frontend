@@ -140,11 +140,12 @@ export default function MedidasTable() {
       disableColumnMenu: true
     },
     {
-      field: 'filename',
+      field: 'Files',
       headerName: 'Archivo',
       sortable: false,
-      renderCell: (params: GridValueGetterParams<string>) => {
-        const url = "http://localhost:9000/" + (params as GridValueGetterFullParams).value;
+      renderCell: (params: GridValueGetterParams) => {
+        const filename = (params as GridValueGetterFullParams).value[0].filename;
+        const url = "http://localhost:9000/" + filename;
         return (<a href={url} target="_blank" className='download_icon'><DownloadIcon onClick={() => setEnEvaluacion((params as GridValueGetterFullParams).row)} /></a>);
 
       },
@@ -162,7 +163,7 @@ export default function MedidasTable() {
             {!(params.row.estado === "radicada") ?
               <Button onClick={() => setEnEvaluacion((params as GridValueGetterFullParams).row)}>Radicar </Button>
               :
-              <BorderColorIcon fontSize='small' className='edit_icon' />
+              null
             }
 
           </NavLink>

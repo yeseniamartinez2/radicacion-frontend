@@ -17,10 +17,6 @@ export const tipo_medidas = [
         "value": "r_conc_de_la_c"
     },
     {
-        "label": "Voto Explicativo",
-        "value": "voto_explicativo"
-    },
-    {
         "label": "Plan de Reorganización",
         "value": "plan_de_reorganizacion"
     }

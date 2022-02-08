@@ -15,7 +15,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 
-function SometerMedidaForm() {
+function SometerInformeDeComision() {
   const ms = new MedidaService();
   const [valueTipoMedida, setTipoMedida] = React.useState<string>('');
   const [valueMedidaFile, setMedidaFile] = React.useState<Array<Blob>>([]);
@@ -160,4 +160,4 @@ function SometerMedidaForm() {
   );
 }
 
-export default SometerMedidaForm;
+export default SometerInformeDeComision;

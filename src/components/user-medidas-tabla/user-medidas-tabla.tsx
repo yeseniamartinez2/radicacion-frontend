@@ -15,16 +15,7 @@ export default function UserMedidasTable() {
   const userEmail: string = useSelector((state: any) => state.userData.email);
   const [loading, setLoading] = React.useState(true);
 
-  const getData = async (): Promise<Medida[]> => {
-    let firstMedidas = [];
-    let secondMedidas = [];
-
-    await ms.getMedidasByEmail(accessToken, userEmail).then((res) => { firstMedidas = res.data });
-    await rs.getRepresentanteByEmail(accessToken, userEmail).then((res) => secondMedidas = res.data.Medidas);
-    firstMedidas.concat(secondMedidas);
-    return secondMedidas.concat(firstMedidas);
-  }
-
+ 
   const medidasCards = medidas.map(function (m, i) {
     return (<Card className="medida-card">
       <h4 className='card-medida-id'>Medida: {m.id}</h4>
@@ -42,20 +33,22 @@ export default function UserMedidasTable() {
   })
 
   React.useEffect(() => {
-    getData().then((res) => {
-      res.sort(function(a,b){
-        // Turn your strings into dates, and then subtract them
-        // to get a value that is either negative, positive, or zero.
-        return b.id - a.id
-      });
-      const last5 = res.slice(0, 4);
-      setMedidas(last5);
-    })
+   
+      ms.getMedidasByEmail(accessToken, userEmail).then((res) => { 
+        let medidas = res.data;
+        medidas.sort(function(a,b){
+          return b.id - a.id
+        });
+        const last4 = medidas.slice(0, 4);
+        setMedidas(last4);
+       });
+     
+   
     if (medidas) {
       setLoading(false);
     }
 
-  }, [accessToken, userEmail, loading, medidas]);
+  }, [accessToken]);
   return (
     <div>
       <h2>Mis Medidas</h2>
