@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux'
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import Checkbox from '@mui/material/Checkbox';
 
 function SometerMedidaForm() {
   const ms = new MedidaService();
@@ -27,7 +28,11 @@ function SometerMedidaForm() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [checked, setChecked] = React.useState(false);
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
 
   const clearForm = () => {
     setMedidaFile([]);
@@ -44,11 +49,11 @@ function SometerMedidaForm() {
 
     }
     else if (valueMedidaFile && valueTipoMedida && valueFilename) {
-      
+
       let formData = new FormData();
       formData.append('tipo', valueTipoMedida);
       formData.append('estado', 'sometida');
-    
+
       valueMedidaFile.forEach((file, i) => {
         formData.append('medidaFile', file)
         formData.append('filename', valueFilename[i]);
@@ -122,9 +127,28 @@ function SometerMedidaForm() {
             )}
           </Dropzone>
           <div className='form_options'>
-            <Button variant="contained" type='submit' onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
-              Someter
-            </Button>
+            <Checkbox
+              className='checkbox'
+              checked={checked}
+              onChange={handleChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+
+            <p className='disclaimer'>Certifico que soy un Representante con la autoridad de someter medidas.</p>
+
+            {checked ?
+              <Button className='submit-button' variant="contained" type='submit' onClick={handleSubmit} color="primary" endIcon={<SaveIcon />}>
+                Someter
+              </Button>
+
+              :
+
+              <Button className='submit-button' variant="contained" type='submit' onClick={handleSubmit} color="primary" endIcon={<SaveIcon />} disabled>
+                Someter
+              </Button>
+
+            }
+
           </div>
 
         </form>

@@ -7,8 +7,9 @@ import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import { tipo_medidas, modal_style } from '../utils/utils';
+import { tipo_medidas, modal_style, Medida, valueToLabel } from '../utils/utils';
 import MedidaService from '../../services/Medida';
+import VotoExplicativoService from '../../services/VotoExplicativo';
 import Alert from '@mui/material/Alert';
 import { useSelector } from 'react-redux'
 import Box from '@mui/material/Box';
@@ -17,20 +18,21 @@ import Modal from '@mui/material/Modal';
 
 function SometerVotoExplicativo() {
   const ms = new MedidaService();
-  const [valueTipoMedida, setTipoMedida] = React.useState<string>('');
-  const [valueMedidaFile, setMedidaFile] = React.useState<Array<Blob>>([]);
+  const ves = new VotoExplicativoService();
+  const [valueFile, setFile] = React.useState<Array<Blob>>([]);
   const [valueFilename, setFilename] = React.useState<Array<string>>([]);
   const [error, setError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const accessToken: string = useSelector((state: any) => state.userData.apiAccessToken);
   const sometidaPor: string = useSelector((state: any) => state.userData.email);
   const [open, setOpen] = React.useState(false);
+  const [medidasRadicadas, setMedidasRadicadas] = React.useState<Medida[]>([]);
+  const [valueMedidaId, setMedidaId] = React.useState<string>('');
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-
   const clearForm = () => {
-    setMedidaFile([]);
+    setFile([]);
     setFilename([]);
   }
 
@@ -38,25 +40,25 @@ function SometerVotoExplicativo() {
     event.preventDefault();
 
 
-    if (valueMedidaFile.length === 0 || valueTipoMedida === '' || typeof valueTipoMedida === "undefined" || valueTipoMedida === '') {
+    if (valueFile.length === 0) {
       setError(true);
       setSuccess(false);
 
     }
-    else if (valueMedidaFile && valueTipoMedida && valueFilename) {
-      
+    else if (valueFile && valueFilename) {
+
       let formData = new FormData();
-      formData.append('tipo', valueTipoMedida);
-      formData.append('estado', 'sometida');
-    
-      valueMedidaFile.forEach((file, i) => {
-        formData.append('medidaFile', file)
+      console.log(valueMedidaId);
+      formData.append('estado', 'sometido');
+      valueFile.forEach((file, i) => {
+        formData.append('votoExplicativoFile', file)
         formData.append('filename', valueFilename[i]);
         console.log(valueFilename[i]);
       })
       formData.append('sometidaPor', sometidaPor);
+      formData.append('MedidaId', valueMedidaId);
       console.log(formData);
-      ms.createMedida(formData, accessToken).then((res) => {
+      ves.createVotoExplicativo(formData, accessToken).then((res) => {
 
         if (res.status === 200) {
           setSuccess(true);
@@ -73,28 +75,34 @@ function SometerVotoExplicativo() {
     }
   };
 
+  React.useEffect(() => {
+    ms.getMedidasRadicadas(accessToken).then((res) => 
+    {
+      setMedidasRadicadas(res.data)
+    });
+  }, [accessToken]);
+
 
   return (
-    <div><h2>Someter Medida</h2>
+    <div><h2>Someter Voto Explicativo</h2>
       <Card className="upload-medida-card">
         <form encType="multipart/form">
           <Autocomplete
             disablePortal
             size="small"
-            options={tipo_medidas}
-            getOptionLabel={(tipo) => tipo.label}
-            isOptionEqualToValue={(option, value) => option.value === value.value}
-            renderInput={(params) => <TextField  {...params} label="Tipo de Medida" />}
+            options={medidasRadicadas}
+            getOptionLabel={(m) => valueToLabel(m.tipo) + " " + m.numeroAsignado}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            renderInput={(params) => <TextField  {...params} label="Medida" />}
             onChange={(event, value) => {
-              console.log(value?.value);
               if (value) {
-                setTipoMedida(value.value);
+                setMedidaId(value.id.toString());
               }
             }}
           />
           <Dropzone onDrop={acceptedFiles => {
             console.log(acceptedFiles);
-            setMedidaFile(acceptedFiles);
+            setFile(acceptedFiles);
             setFilename([acceptedFiles[0].name]);
           }
           }
@@ -102,14 +110,14 @@ function SometerVotoExplicativo() {
             {({ getRootProps, getInputProps }) => (
               <section>
                 <div className="dropzone" {...getRootProps()}>
-                  <input {...getInputProps()} type="file" name="medidaFile" id="medidaFile" />
-                  {(valueMedidaFile.length > 0) ?
+                  <input {...getInputProps()} type="file" name="votoExplicativoFile" id="votoExplicativoFile" />
+                  {(valueFile.length > 0) ?
                     <div className="file">
                       <p>{valueFilename}</p>
                       <IconButton
                         className='delete-file'
                         aria-label="delete"
-                        onClick={() => setMedidaFile([])}
+                        onClick={() => setFile([])}
                         size="small">
                         <ClearIcon fontSize="small" />
                       </IconButton>
@@ -135,7 +143,7 @@ function SometerVotoExplicativo() {
         <Alert className="feedback-message" severity="error">Asegúrese de que la forma esté completada.</Alert>
         : null}
       {success ?
-        <Alert className="feedback-message" severity="success">La medida fue sometida exitosamente.</Alert>
+        <Alert className="feedback-message" severity="success">El voto explicativo fue sometido exitosamente.</Alert>
         : null}
 
       <Modal

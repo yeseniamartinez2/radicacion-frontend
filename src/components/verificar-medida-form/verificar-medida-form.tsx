@@ -233,7 +233,7 @@ function VerificarMedidaForm() {
           <Alert className="feedback-message" severity="error">Asegúrese de que la forma esté completada.</Alert>
           : null}
         {success ?
-          <Alert className="feedback-message" severity="success">La medida fue sometida exitosamente.</Alert>
+          <Alert className="feedback-message" severity="success">La medida fue radicada exitosamente.</Alert>
           : null}
 
         <Dialog

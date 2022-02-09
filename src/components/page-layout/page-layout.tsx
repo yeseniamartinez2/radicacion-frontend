@@ -154,11 +154,22 @@ export const PageLayout = (props) => {
                                     <ListItemText>Mis Medidas</ListItemText>
                                 </MenuItem>
                             </NavLink>
-                            <NavLink to="/radicacion">
+                            <NavLink to="/someter-medida">
                                 <MenuItem>
                                     <ListItemText>Someter Medida</ListItemText>
                                 </MenuItem>
                             </NavLink>
+                            <NavLink to="/someter-voto-explicativo">
+                                <MenuItem>
+                                    <ListItemText>Someter Voto Explicativo</ListItemText>
+                                </MenuItem>
+                            </NavLink>
+                            <NavLink to="/someter-informe-de-comision">
+                                <MenuItem>
+                                    <ListItemText>Someter Informe de Comisión</ListItemText>
+                                </MenuItem>
+                            </NavLink>
+
                         </div>}
 
                     <Divider />

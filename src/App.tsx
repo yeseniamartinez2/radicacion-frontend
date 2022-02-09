@@ -7,6 +7,8 @@ import './components/verificar-medida-form/verificar-medida-form.css'
 import './components/user-medidas-tabla/user-medidas-tabla.css';
 import './components/inicio/inicio.css';
 import SometerMedidaForm from './components/someter-medida/someter-medida';
+import SometerVotoExplicativo from './components/someter-voto-explicativo/voto-explicativo';
+import SometerInformeDeComision from './components/someter-informe-de-comision/informe-de-comision';
 import Inicio from './components/inicio/inicio';
 import MedidasTable from "./components/medidas-tabla/medidas-tabla";
 import VerificarMedidaForm from "./components/verificar-medida-form/verificar-medida-form";
@@ -103,7 +105,9 @@ function App() {
                   <Route path="/mis-medidas" element={<UserMedidasTable />} />
                   <Route path="/verificacion" element={<MedidasTable />} />
                   <Route path="/verificacion/:id" element={<VerificarMedidaForm />} />
-                  <Route path="/radicacion" element={<SometerMedidaForm />} />
+                  <Route path="/someter-medida" element={<SometerMedidaForm />} />
+                  <Route path="/someter-voto-explicativo" element={<SometerVotoExplicativo />} />
+                  <Route path="/someter-informe-de-comision" element={<SometerInformeDeComision />} />
                 </Routes>
               </div>
 

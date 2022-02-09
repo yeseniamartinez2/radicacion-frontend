@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:9000/medidas/";
+const baseURL = "http://localhost:9000/votos-explicativos/";
 
 
-export default class MedidaService {
+export default class VotoExplicativoService {
 
-    getMedidas(token: string) {
+    getVotosExplicativos(token: string) {
         return axios.get(baseURL, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -13,15 +13,7 @@ export default class MedidaService {
           });
     }
 
-    getMedidasRadicadas(token: string) {
-        return axios.get(baseURL + "radicadas", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-          });
-    }
-
-    getMedida(id, token) {
+    getVotoExplicativo(id, token) {
         return axios.get(baseURL + id, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -29,9 +21,7 @@ export default class MedidaService {
           });
     }
 
-    
-
-    createMedida(body, token){
+    createVotoExplicativo(body, token){
         const config = {     
             headers: { 
                 'content-type': 'multipart/form-data',
@@ -59,7 +49,7 @@ export default class MedidaService {
           })
     }
 
-    putMedida(id, body, token){
+    putVotoExplicativo(id, body, token){
         return axios.put(baseURL + id,  body, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -67,7 +57,7 @@ export default class MedidaService {
           } );
     }
 
-    getMedidasByEmail(token,  email) {
+    getVotoExplicativosByEmail(token,  email) {
         const config = {     
               headers: { 
                   Authorization: `Bearer ${token}`

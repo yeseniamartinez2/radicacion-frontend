@@ -21,7 +21,7 @@ body, #root{
 .authenticated-main {
   width: 100%;
     display: grid;
-    grid-template-columns: 170px 5fr;
+    grid-template-columns: 220px 5fr;
     grid-template-rows: auto;
     grid-template-areas: "side main main main main main";
     column-gap: 20px;
